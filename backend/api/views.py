@@ -7,6 +7,7 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -18,9 +19,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from .filters import AuthorSearchFilter, NameSearchFilter
-
 from .permissions import IsAuthor, IsAuthorOrReadOnly
-
 from .serializers import (
     AvatarSerializer,
     CustomUserCreateSerializer,
@@ -33,7 +32,6 @@ from .serializers import (
     RecipeSerializer,
     TagListSerializer,
 )
-
 from foodgram.models import (
     CustomUser,
     Favorite,
