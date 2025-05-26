@@ -1,11 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator, MaxLengthValidator
-
 from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
-from .fields import Base64ImageField
 from foodgram.constants import (
     ERROR_MESSAGE_CHECK_LENGTH,
     ERROR_MESSAGE_DOUBLE_EMAIL,
@@ -24,6 +22,8 @@ from foodgram.models import (
     ShoppingCart,
     Tag,
 )
+
+from .fields import Base64ImageField
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):

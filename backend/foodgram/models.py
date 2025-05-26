@@ -2,13 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
-from .constants import (
-    MAX_EMAIL,
-    MAX_INGREDIENTS,
-    MAX_MEASUREMENT_UNIT,
-    MAX_RECIPE_NAME,
-    MAX_TAG,
-    MAX_USER
+from api.constants import (
+    MAX_EMAIL, MAX_INGREDIENTS, MAX_MEASUREMENT_UNIT,
+    MAX_RECIPE_NAME, MAX_TAG, MAX_USER
 )
 from .validators import validate_name
 
