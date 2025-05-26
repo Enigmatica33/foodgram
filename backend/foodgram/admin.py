@@ -1,14 +1,21 @@
 from django.contrib import admin
-from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Tag, Ingredient, Recipe, CustomUser, RecipeTag, RecipeIngredient
+from .models import (
+    Tag,
+    Ingredient,
+    Recipe,
+    CustomUser,
+    RecipeTag,
+    RecipeIngredient
+)
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
-    extra = 1  # Количество пустых форм, доступных для добавления новых ингредиентов
-
+    extra = 1
+    # Количество пустых форм,
+    # доступных для добавления новых ингредиентов
     # Можно добавить дополнительные настройки для отображения
     # полей в админ-панели, если это необходимо
     fields = ('ingredient', 'amount')

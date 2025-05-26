@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
         # blank=False,
         # null=False,
         unique=True,
-        validators=[RegexValidator(regex='^[\w.@+-]+\Z'), validate_name]
+        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
     )
     first_name = models.CharField(
         max_length=MAX_USER,
@@ -101,7 +101,8 @@ class Recipe(models.Model):
     # связанные с конкретным автором, используя
     #           author_instance.recipes.all(),
     # где author_instance – это экземпляр модели CustomUser.
-    # Это удобно для запроса всех рецептов, связанных с определенным пользователем.
+    # Это удобно для запроса всех рецептов,
+    # связанных с определенным пользователем.
     name = models.CharField(
         max_length=MAX_RECIPE_NAME,
         verbose_name='Название рецепта'
