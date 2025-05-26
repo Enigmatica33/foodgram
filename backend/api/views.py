@@ -18,7 +18,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from .filters import AuthorSearchFilter, NameSearchFilter
-from .permissions import IsAuthorOrReadOnly, IsAuthor
+
+from .permissions import IsAuthor, IsAuthorOrReadOnly
+
 from .serializers import (
     AvatarSerializer,
     CustomUserCreateSerializer,
@@ -26,20 +28,21 @@ from .serializers import (
     FollowSerializer,
     IngredientListSerializer,
     MeSerializer,
-    RecipeSerializer,
     RecipeMiniSerializer,
     RecipeReadSerializer,
+    RecipeSerializer,
     TagListSerializer,
 )
+
 from foodgram.models import (
     CustomUser,
+    Favorite,
     Follow,
     Ingredient,
     Recipe,
     RecipeIngredient,
     Tag,
     ShoppingCart,
-    Favorite
 )
 
 

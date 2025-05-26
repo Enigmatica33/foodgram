@@ -5,6 +5,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from .fields import Base64ImageField
+
 from foodgram.constants import (
     MAX_USER,
     ERROR_MESSAGE_CHECK_LENGTH,
@@ -12,6 +13,7 @@ from foodgram.constants import (
     ERROR_MESSAGE_DOUBLE_USERNAME,
     ERROR_MESSAGE_REGEX,
 )
+
 from foodgram.models import (
     CustomUser,
     Favorite,

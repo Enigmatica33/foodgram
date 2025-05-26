@@ -4,10 +4,10 @@ from django.db import models
 
 from .constants import (
     MAX_EMAIL,
-    MAX_RECIPE_NAME,
-    MAX_TAG,
     MAX_INGREDIENTS,
     MAX_MEASUREMENT_UNIT,
+    MAX_RECIPE_NAME,
+    MAX_TAG,
     MAX_USER
 )
 from .validators import validate_name
