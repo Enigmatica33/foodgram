@@ -4,24 +4,12 @@ from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
-from foodgram.constants import (
-    ERROR_MESSAGE_CHECK_LENGTH,
-    ERROR_MESSAGE_DOUBLE_EMAIL,
-    ERROR_MESSAGE_DOUBLE_USERNAME,
-    ERROR_MESSAGE_REGEX,
-    MAX_USER,
-)
-from foodgram.models import (
-    CustomUser,
-    Favorite,
-    Follow,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    RecipeTag,
-    ShoppingCart,
-    Tag,
-)
+from foodgram.constants import (ERROR_MESSAGE_CHECK_LENGTH,
+                                ERROR_MESSAGE_DOUBLE_EMAIL,
+                                ERROR_MESSAGE_DOUBLE_USERNAME,
+                                ERROR_MESSAGE_REGEX, MAX_USER)
+from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
+                             RecipeIngredient, RecipeTag, ShoppingCart, Tag)
 
 from .fields import Base64ImageField
 

@@ -4,44 +4,29 @@ from io import BytesIO
 
 from django.conf import settings
 from django.db.models import Sum
-from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
+from django_filters.rest_framework import DjangoFilterBackend
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+
+from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
+                             RecipeIngredient, ShoppingCart, Tag)
 
 from .filters import AuthorSearchFilter, NameSearchFilter
 from .permissions import IsAuthor, IsAuthorOrReadOnly
-from .serializers import (
-    AvatarSerializer,
-    CustomUserCreateSerializer,
-    CustomUserSerializer,
-    FollowSerializer,
-    IngredientListSerializer,
-    MeSerializer,
-    RecipeMiniSerializer,
-    RecipeReadSerializer,
-    RecipeSerializer,
-    TagListSerializer,
-)
-from foodgram.models import (
-    CustomUser,
-    Favorite,
-    Follow,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    Tag,
-    ShoppingCart,
-)
+from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
+                          CustomUserSerializer, FollowSerializer,
+                          IngredientListSerializer, MeSerializer,
+                          RecipeMiniSerializer, RecipeReadSerializer,
+                          RecipeSerializer, TagListSerializer)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

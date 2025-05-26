@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (
-    CustomUser, Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag,
-)
+from .models import (CustomUser, Ingredient, Recipe, RecipeIngredient,
+                     RecipeTag, Tag)
 
 
 class RecipeIngredientInline(admin.TabularInline):
