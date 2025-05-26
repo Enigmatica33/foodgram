@@ -7,11 +7,11 @@ from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 from .fields import Base64ImageField
 
 from foodgram.constants import (
-    MAX_USER,
     ERROR_MESSAGE_CHECK_LENGTH,
     ERROR_MESSAGE_DOUBLE_EMAIL,
     ERROR_MESSAGE_DOUBLE_USERNAME,
     ERROR_MESSAGE_REGEX,
+    MAX_USER,
 )
 
 from foodgram.models import (
