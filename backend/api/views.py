@@ -7,7 +7,7 @@ from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -17,7 +17,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-from .filters import AuthorSearchFilter, NameSearchFilter, TagFilter
+from .filters import AuthorSearchFilter, NameSearchFilter
 from .permissions import IsAuthorOrReadOnly, IsAuthor
 from .serializers import (
     AvatarSerializer,
@@ -58,7 +58,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['get', 'post', 'delete'], permission_classes=(IsAuthenticated,))
+    @action(
+        detail=True,
+        methods=['get', 'post', 'delete'],
+        permission_classes=(IsAuthenticated,)
+    )
     def subscribe(self, request, pk=None):
         """Создание подписки."""
         author = get_object_or_404(CustomUser, id=pk)
@@ -108,14 +112,26 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = MeSerializer(user)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['put', 'delete'], url_path='avatar', permission_classes=(IsAuthenticated,))
+    @action(
+        detail=True,
+        methods=['put', 'delete'],
+        url_path='avatar',
+        permission_classes=(IsAuthenticated,)
+    )
     def update_avatar(self, request, pk=None):
         """Добавление/удаление аватара."""
         user = request.user
         if request.method == 'PUT':
             if 'avatar' not in request.data or not request.data['avatar']:
-                return Response({'error': 'Добавьте аватар.'}, status=status.HTTP_400_BAD_REQUEST)
-            serializer = AvatarSerializer(user, data=request.data, partial=True)
+                return Response(
+                    {'error': 'Добавьте аватар.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = AvatarSerializer(
+                user,
+                data=request.data,
+                partial=True
+            )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
@@ -124,11 +140,20 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['post'], url_path='set_password', url_name='set_password', permission_classes=(IsAuthenticated,))
+    @action(
+        detail=False,
+        methods=['post'],
+        url_path='set_password',
+        url_name='set_password',
+        permission_classes=(IsAuthenticated,)
+    )
     def set_password(self, request, pk=None):
         user = request.user
         if user is None:
-            return Response({'error': 'Пользователь не найден'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {'error': 'Пользователь не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         current_password = request.data.get("current_password")
         new_password = request.data.get("new_password")
         errors = []
@@ -137,7 +162,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         if not new_password:
             errors.append('Новый пароль не предоставлен')
         if errors:
-            return Response({'errors': errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'errors': errors},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         user.set_password(new_password)
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -273,7 +301,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         y_position = height - 100
         p.setFont('DejaVuSans', 20)
         for ingredient in ingredients:
-            text = f"- {ingredient['ingredient__name']}: {ingredient['amount']} {ingredient['ingredient__measurement_unit']}"
+            text = f"-{ingredient['ingredient__name']}: {ingredient['amount']}"
+            f"{ingredient['ingredient__measurement_unit']}"
             p.drawString(100, y_position, text.encode('utf-8').decode('utf-8'))
             y_position -= 30
             if y_position < 50:

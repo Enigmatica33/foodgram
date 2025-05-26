@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from foodgram.models import CustomUser, Ingredient, Recipe, Tag
+from foodgram.models import Ingredient, Recipe
 
 
 class NameSearchFilter(filters.FilterSet):
@@ -35,8 +35,6 @@ class TagFilter(filters.FilterSet):
 
     def filter_by_name(self, queryset, tags__slug, value):
         return queryset.filter(tags__slug=value)
-
-
 
     # """Фильтр для поиска рецепта по тегам."""
     # tag = filters.ModelMultipleChoiceFilter(

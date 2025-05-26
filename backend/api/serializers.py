@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator, MaxLengthValidator
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
@@ -198,7 +198,10 @@ class RecipeMiniSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для создания рецептов."""
     ingredients = RecipeIngredientSerializer(many=True)
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
     image = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -227,20 +230,30 @@ class RecipeSerializer(serializers.ModelSerializer):
             try:
                 Ingredient.objects.get(pk=ingredient_id)
             except ObjectDoesNotExist:
-                raise serializers.ValidationError(f'Ингредиент c ID {ingredient_id} не существует.')
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {ingredient_id} не существует.'
+                )
             if amount < 1:
-                raise serializers.ValidationError('Необходимо указать количество ингредиента')
+                raise serializers.ValidationError(
+                    'Необходимо указать количество ингредиента'
+                )
             if ingredient_id in ingredient_ids:
-                raise serializers.ValidationError(f'Ингредиент c ID {ingredient_id} уже указан.')
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {ingredient_id} уже указан.'
+                )
             ingredient_ids.add(ingredient_id)
         for tags in data['tags']:
             tag_id = tags.id
             try:
                 Tag.objects.get(pk=tag_id)
             except ObjectDoesNotExist:
-                raise serializers.ValidationError(f'Ингредиент c ID {tag_id} не существует.')
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {tag_id} не существует.'
+                )
             if tag_id in tag_ids:
-                raise serializers.ValidationError(f'Ингредиент c ID {tag_id} уже указан.')
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {tag_id} уже указан.'
+                )
             tag_ids.add(tag_id)
         return data
 
@@ -299,7 +312,11 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
     author = CustomUserSerializer()
-    image = serializers.ImageField(use_url=True, required=False, allow_null=True)
+    image = serializers.ImageField(
+        use_url=True,
+        required=False,
+        allow_null=True
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -352,7 +369,9 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return ShoppingCart.objects.filter(user=request.user, recipe=obj).exists()
+        return ShoppingCart.objects.filter(
+            user=request.user, recipe=obj
+        ).exists()
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -384,7 +403,10 @@ class FollowSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         if request:
-            return Follow.objects.filter(user=request.user, following=obj).exists()
+            return Follow.objects.filter(
+                user=request.user,
+                following=obj
+            ).exists()
         else:
             return False
 
