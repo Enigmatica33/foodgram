@@ -33,6 +33,8 @@ services:
       - backend
       - frontend
     volumes:
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/static
       - media:/media
 
