@@ -28,7 +28,7 @@ services:
   nginx:
     image: enigmatica/foodgram_nginx
     ports:
-      - "9000:80"
+      - "8000:80"
     depends_on:
       - backend
       - frontend

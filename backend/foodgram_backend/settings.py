@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z*ubgq#rrhnrpj&(3%*xax6a_n&b&6)#%1i=d2lzbx+%-5clov'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'foodgram.myftp.org']
 
@@ -69,6 +69,8 @@ WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': '/data/db.sqlite3',
         # Меняем настройку Django: теперь для работы будет использоваться
         # бэкенд postgresql
         'ENGINE': 'django.db.backends.postgresql',
