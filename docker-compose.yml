@@ -14,14 +14,14 @@ services:
     depends_on:
       - db
     image: enigmatica/foodgram_backend
+    ports:
+      - "9123:9123"
     volumes:
       - media:/app/media
       - static:/app/static
     env_file: .env
 
   frontend:
-    # container_name: foodgram-front
-    # build: ../frontend
     image: enigmatica/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
