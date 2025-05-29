@@ -132,7 +132,7 @@ jobs:
           cd foodgram || { echo "Directory not found"; exit 1; }
           sudo docker compose -f docker-compose.yml pull || { echo "Pull failed"; exit 1; }
           sudo docker compose -f docker-compose.yml down || { echo "Down failed"; exit 1; }
-          sudo docker compose -f docker-compose.yml up -d || { echo "Up -d failed"; exit 1; }
+          sudo docker compose -f docker-compose.yml up -d --build || { echo "Up -d failed"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend python manage.py migrate || { echo "migrate"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic || { echo "collectstatic"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /static/ || { echo "CP failed"; exit 1; }
