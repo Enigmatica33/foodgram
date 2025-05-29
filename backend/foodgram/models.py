@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MinValueValidator
+# , RegexValidator
 from django.db import models
 
 from .constants import (MAX_EMAIL, MAX_INGREDIENTS, MAX_MEASUREMENT_UNIT,
