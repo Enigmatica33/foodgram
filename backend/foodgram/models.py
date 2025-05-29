@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
         # blank=False,
         # null=False,
         unique=True,
-        # validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
+        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
     )
     first_name = models.CharField(
         max_length=MAX_USER,
@@ -33,8 +33,8 @@ class CustomUser(AbstractUser):
         default=None
     )
     is_subscribed = models.BooleanField(default=False)
-    # USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['password']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['password']
 
     class Meta:
         verbose_name = 'Пользователь'
