@@ -23,8 +23,9 @@ services:
 
   frontend:
     image: enigmatica/foodgram_frontend
+    command: npm run build && cp -r ????????? /app/result_build/
     volumes:
-      - ../frontend/:/app/result_build/
+      - static:/app/result_build/
     env_file: .env
 
   # nginx:
@@ -50,6 +51,6 @@ services:
       - backend
       - frontend
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/foodgram.conf 
+      - nginx.conf:/etc/nginx/conf.d/foodgram.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
