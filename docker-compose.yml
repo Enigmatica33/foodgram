@@ -25,29 +25,31 @@ services:
     image: enigmatica/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
-  nginx:
-    image: enigmatica/foodgram_nginx
-    ports:
-      - "8080:80"
-    depends_on:
-      - backend
-      - frontend
-    volumes:
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
-      - static:/static
-      - media:/media
-
+    env_file: .env
 
   # nginx:
-  #   container_name: foodgram-proxy
-  #   image: nginx:1.25.4-alpine
+  #   image: enigmatica/foodgram_nginx
   #   ports:
-  #     - "80:80"
+  #     - "8080:80"
   #   depends_on:
   #     - backend
   #     - frontend
   #   volumes:
-  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf 
   #     - ../frontend/build:/usr/share/nginx/html/
   #     - ../docs/:/usr/share/nginx/html/api/docs/
+  #     - static:/static
+  #     - media:/media
+
+
+  nginx:
+    container_name: foodgram-proxy
+    image: nginx:1.25.4-alpine
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf 
+      - ../frontend/build:/usr/share/nginx/html/
+      - ../docs/:/usr/share/nginx/html/api/docs/
