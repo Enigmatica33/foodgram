@@ -16,7 +16,7 @@ services:
     image: enigmatica/foodgram_backend
     ports:
       - "9123:9123"
-    commands: cp -r /app/collected_static/. /backend_static/
+    command: cp -r /app/collected_static/. /backend_static/
     volumes:
       - media:/app/media
       - static:/backend_static
