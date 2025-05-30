@@ -23,7 +23,6 @@ services:
 
   frontend:
     image: enigmatica/foodgram_frontend
-    command: cp -r /app/result_build/. /frontend_static/
     volumes:
       - static:/frontend_static
     env_file: .env
