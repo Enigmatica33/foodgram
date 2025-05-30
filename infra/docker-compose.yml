@@ -16,16 +16,17 @@ services:
     image: enigmatica/foodgram_backend
     ports:
       - "9123:9123"
+    commands: cp -r /app/collected_static/. /backend_static/
     volumes:
       - media:/app/media
-      - static:/app/static
+      - static:/backend_static
     env_file: .env
 
   frontend:
     image: enigmatica/foodgram_frontend
-    # command: npm run build && cp -r ????????? /app/result_build/
+    command: cp -r /app/result_build/. /frontend_static/
     volumes:
-      - static:/app/result_build/
+      - static:/frontend_static
     env_file: .env
 
   # nginx:
