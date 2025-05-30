@@ -12,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z*ubgq#rrhnrpj&(3%*xax6a_n&b&6)#%1i=d2lzbx+%-5clov'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'foodgram.myftp.org']
+ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'backend', 'foodgram.myftp.org']
 
 
 # Application definition
