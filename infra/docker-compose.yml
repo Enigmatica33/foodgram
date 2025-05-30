@@ -14,8 +14,8 @@ services:
     depends_on:
       - db
     image: enigmatica/foodgram_backend
-    ports:
-      - "9123:9123"
+    # ports:
+    #   - "9123:9123"
     volumes:
       - media:/app/media
       - static:/app/collected_static
@@ -31,7 +31,7 @@ services:
     container_name: foodgram-proxy
     image: nginx:1.25.4-alpine
     ports:
-      - "80:8888"
+      - "9000:80"
     depends_on:
       - backend
       - frontend
