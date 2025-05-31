@@ -1,8 +1,6 @@
 import hashlib
-import os
 from io import BytesIO
 
-from django.conf import settings
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -297,13 +295,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 y_position = height - 100
         p.save()
         buffer.seek(0)
-        file_path = os.path.join(
-            settings.BASE_DIR,
-            f'{request.user.username}_shopping_list.pdf'
+        response = HttpResponse(
+            buffer,
+            content_type='application/pdf'  # указываем тип контента
         )
-        with open(file_path, 'wb') as f:
-            f.write(buffer.getvalue())
-        return HttpResponse(f'Список покупок сохранён: {file_path}')
+        response['Content-Disposition'] = 'attachment; '
+        f'filename="{request.user.username}_shopping_list.pdf"'
+        return response
+        # file_path = os.path.join(
+        #     settings.BASE_DIR,
+        #     f'{request.user.username}_shopping_list.pdf'
+        # )
+        # with open(file_path, 'wb') as f:
+        #     f.write(buffer.getvalue())
+        # return HttpResponse(f'Список покупок сохранён: {file_path}')
 
 
 class TagViewSet(viewsets.ModelViewSet):
