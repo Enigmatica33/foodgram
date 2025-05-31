@@ -11,6 +11,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -189,7 +190,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, url_path='get-link', url_name='get-link')
     def get_link(self, request, pk=None):
         """Получение короткой ссылки на рецепт."""
-        recipe = Recipe.objects.get(pk=pk)
+        try:
+            recipe = Recipe.objects.get(pk=pk)
+        except Recipe.DoesNotExist:
+            raise NotFound("Recipe not found")
         full_url = f'{request.scheme}://{request.get_host()}'
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
         short_link = f'{full_url}/s/{recipe_hash}'
@@ -297,18 +301,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         buffer.seek(0)
         response = HttpResponse(
             buffer,
-            content_type='application/pdf'  # указываем тип контента
+            content_type='application/pdf'
         )
         response['Content-Disposition'] = 'attachment; '
         f'filename="{request.user.username}_shopping_list.pdf"'
         return response
-        # file_path = os.path.join(
-        #     settings.BASE_DIR,
-        #     f'{request.user.username}_shopping_list.pdf'
-        # )
-        # with open(file_path, 'wb') as f:
-        #     f.write(buffer.getvalue())
-        # return HttpResponse(f'Список покупок сохранён: {file_path}')
 
 
 class TagViewSet(viewsets.ModelViewSet):
