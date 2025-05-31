@@ -34,8 +34,8 @@ class CustomUser(AbstractUser):
         default=None
     )
     is_subscribed = models.BooleanField(default=False)
-    # USERNAME_FIELD = 'email'
-    # REQUIRED_FIELDS = ['password']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['password']
 
     class Meta:
         verbose_name = 'Пользователь'
