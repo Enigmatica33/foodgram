@@ -275,7 +275,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
+        ).annotate(amount=Sum('amount')).order_by('ingredient__name')
         buffer = BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
