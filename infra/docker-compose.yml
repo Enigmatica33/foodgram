@@ -14,8 +14,6 @@ services:
     depends_on:
       - db
     image: enigmatica/foodgram_backend
-    # ports:
-    #   - "9123:9123"
     volumes:
       - media:/app/media
       - static:/app/collected_static
@@ -24,7 +22,8 @@ services:
   frontend:
     image: enigmatica/foodgram_frontend
     volumes:
-      - static:/frontend_static
+      - ../frontend/:/app/result_build/
+      # - static:/frontend_static
     env_file: .env
 
   nginx:
@@ -41,6 +40,7 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static
       - media:/var/html/media
+
 
 
 # version: '3.3'
