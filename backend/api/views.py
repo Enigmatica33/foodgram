@@ -164,16 +164,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = AuthorSearchFilter
 
-    def get_permissions(self):
-        """Определяем права доступа для создания и обновления."""
-        if self.request.method == 'POST':
-            self.permission_classes = [IsAuthenticated]
-        elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            self.permission_classes = [IsAuthorOrReadOnly]
-        else:
-            self.permission_classes = [AllowAny]
+    # def get_permissions(self):
+    #     """Определяем права доступа для создания и обновления."""
+    #     if self.request.method == 'POST':
+    #         self.permission_classes = [IsAuthenticated]
+    #     elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
+    #         self.permission_classes = [IsAuthorOrReadOnly]
+    #     else:
+    #         self.permission_classes = [AllowAny]
 
-        return super().get_permissions()
+    #     return super().get_permissions()
 
     def perform_create(self, serializer):
         """Авторизованный пользователь создает пост."""
@@ -200,7 +200,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=(AllowAny,)
+        permission_classes=(IsAuthenticated,)
     )
     def get_favorite(self, request, pk=None):
         """Добавление рецепта в избранное."""
@@ -208,7 +208,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             if not Favorite.objects.filter(
                 user=request.user,
-                recipe__id=pk
+                recipe=recipe
             ).exists():
                 serializer = RecipeMiniSerializer(recipe)
                 Favorite.objects.create(user=request.user, recipe=recipe)
