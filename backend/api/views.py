@@ -201,20 +201,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        url_path='favorite',
-        url_name='favorite',
+        # url_path='favorite',
+        # url_name='favorite',
         methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,)
     )
     def get_favorite(self, request, pk=None):
         """Добавление рецепта в избранное."""
-        # recipe = self.get_object()
+        recipe = self.get_object()
         if request.method == 'POST':
             if not Favorite.objects.filter(
                 user=request.user,
                 recipe__id=pk
             ).exists():
-                recipe = get_object_or_404(Recipe, id=pk)
                 serializer = RecipeMiniSerializer(recipe)
                 Favorite.objects.create(user=request.user, recipe=recipe)
             else:
@@ -224,20 +223,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         if request.method == 'DELETE':
-            # try:
-            #     favorite = Favorite.objects.get(
-            #         user=request.user,
-            #         recipe=recipe
-            #     )
-            # except Favorite.DoesNotExist:
-            favorite = Favorite.objects.filter(
-                user=request.user,
-                recipe__id=pk
-            )
-            if recipe.exists():
-                favorite.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                favorite = Favorite.objects.get(
+                    user=request.user,
+                    recipe=recipe
+                )
+            except Favorite.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            favorite.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
