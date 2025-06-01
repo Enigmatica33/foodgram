@@ -84,9 +84,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get', 'post'])
     def subscriptions(self, request):
         """Просмотр и управление своими подписками."""
-        user = request.user
-        subscriptions = user.following.all()
-        # page = self.paginate_queryset(subscriptions)
+        subscriptions = Follow.objects.filter(user=request.user)
         serializer = FollowSerializer(subscriptions, many=True)
         return self(serializer.data)
 
