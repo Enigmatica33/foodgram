@@ -276,8 +276,9 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.name = validated_data['name']
         instance.text = validated_data['text']
         instance.cooking_time = validated_data['cooking_time']
-        if 'image' in validated_data:
-            instance.image = validated_data['image']
+        instance.image = validated_data.get('image')
+        # if validated_data.get('image'):
+        #     instance.image = validated_data['image']
         instance.ingredients.through.objects.filter(recipe=instance).delete()
         instance.tags.clear()
         self.create_recipe_ingredient(ingredients, instance)
