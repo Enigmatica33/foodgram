@@ -61,7 +61,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 user=request.user,
                 following=author
             ).exists():
-                serializer = FollowSerializer(author)
+                serializer = FollowSerializer(
+                    author,
+                    data=request.data,
+                    context={'request': request}
+                )
+                serializer.is_valid(raise_exception=True)
                 Follow.objects.create(user=request.user, following=author)
             else:
                 return Response(
@@ -69,15 +74,12 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-
         if request.method == 'DELETE':
-            try:
-                subscription = Follow.objects.get(
-                    user=request.user,
-                    following=author
-                )
-            except Follow.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+            subscription = get_object_or_404(
+                Follow,
+                user=request.user,
+                following=author
+            )
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
