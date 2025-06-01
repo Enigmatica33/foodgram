@@ -161,5 +161,6 @@ DJOSER = {
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
         'user': ['rest_framework.permissions.AllowAny'],
-    }
+    },
+    'TOKEN_MODEL': 'rest_framework.authtoken.models.Token',
 }
