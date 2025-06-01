@@ -20,7 +20,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
 from .filters import AuthorSearchFilter, NameSearchFilter
-from .permissions import IsAuthor, IsAuthorOrReadOnly
+from .permissions import IsAuthor
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
                           IngredientListSerializer, MeSerializer,
