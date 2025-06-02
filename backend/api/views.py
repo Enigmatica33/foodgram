@@ -202,6 +202,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
         short_link = f'{full_url}/s/{recipe_hash}'
         recipe.short_link = short_link
+        recipe.save()
         return Response({'short-link': short_link})
 
     @action(
