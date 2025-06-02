@@ -29,7 +29,7 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 
 def redirect_short_link(request):
-    link = request.build_absolute_uri()
+    link = request.path
     recipe = get_object_or_404(Recipe, short_link=link)
     return redirect(f'/recipes/{recipe.id}/')
 
@@ -201,7 +201,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         full_url = f'{request.scheme}://{request.get_host()}'
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
         short_link = f'{full_url}/s/{recipe_hash}'
-        recipe.short_link = short_link
+        recipe.short_link = f's/{recipe_hash}'
         recipe.save()
         return Response({'short-link': short_link})
 

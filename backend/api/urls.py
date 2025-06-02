@@ -17,7 +17,7 @@ urlpatterns = [
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
     path(
-        '<str:short_link>',
+        '<str:short_link>/',
         redirect_short_link,
         name='redirect_short_link'
     )
