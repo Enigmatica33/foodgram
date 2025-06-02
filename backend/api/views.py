@@ -28,8 +28,8 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeSerializer, TagListSerializer)
 
 
-def redirect_short_link(request):
-    recipe = get_object_or_404(Recipe, short_link='c81')
+def redirect_short_link(short_link='c81'):
+    recipe = get_object_or_404(Recipe, short_link=short_link)
     return redirect(f'/recipes/{recipe.id}/')
 
 
