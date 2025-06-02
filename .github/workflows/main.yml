@@ -82,33 +82,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
   
-  # build_nginx_and_push_to_docker_hub:
-  #   name: Push nginx Docker image to DockerHub
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out the repo
-  #       uses: actions/checkout@v3
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v2
-  #     - name: Login to Docker 
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKER_USERNAME }}
-  #         password: ${{ secrets.DOCKER_PASSWORD }}
-  #     - name: Push to DockerHub
-  #       uses: docker/build-push-action@v4
-  #       with:
-  #         context: ./infra/
-  #         push: true
-  #         tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_nginx:latest
-
-  
   deploy:
     runs-on: ubuntu-latest
     needs: 
       - build_and_push_to_docker_hub
       - build_frontend_and_push_to_docker_hub
-      # - build_nginx_and_push_to_docker_hub
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
@@ -130,9 +108,11 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd foodgram/infra || { echo "Directory not found"; exit 1; }
+          sudo docker image prune -f || { echo "Image prune failed"; exit 1; }
           sudo docker compose -f docker-compose.yml pull || { echo "Pull failed"; exit 1; }
           sudo docker compose -f docker-compose.yml down || { echo "Down failed"; exit 1; }
           sudo docker compose -f docker-compose.yml up -d --build || { echo "Up -d failed"; exit 1; }
+          sudo docker image prune -f || { echo "Image prune failed"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend python manage.py migrate || { echo "migrate"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic --no-input || { echo "collectstatic"; exit 1; }
           sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/ || { echo "CP failed"; exit 1; }
