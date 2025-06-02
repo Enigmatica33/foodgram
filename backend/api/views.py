@@ -3,7 +3,7 @@ from io import BytesIO
 
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -26,7 +26,6 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeMiniSerializer, RecipeReadSerializer,
                           RecipeSerializer, TagListSerializer)
-
 
 # def redirect_short_link(request):
 #     link = request.build_absolute_uri()
