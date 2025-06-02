@@ -5,14 +5,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
     path(
-        's/c81',
+        's/c81/',
         redirect_short_link,
         name='redirect_short_link'
-    )
-
+    ),
+    path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:
