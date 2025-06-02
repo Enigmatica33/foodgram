@@ -87,7 +87,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=False, methods=['get', 'post'])
+    @action(
+        detail=False,
+        methods=['get', 'post'],
+        permission_classes=(IsAuthenticated,)
+    )
     def subscriptions(self, request):
         """Просмотр и управление своими подписками."""
         subscriptions = Follow.objects.filter(user=request.user)
