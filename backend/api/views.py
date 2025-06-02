@@ -30,7 +30,8 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 def redirect_short_link(short_link='c81'):
     recipe = get_object_or_404(Recipe, short_link=short_link)
-    return redirect(f'/recipes/{recipe.id}/')
+    print(recipe)
+    return redirect('https://foodgram.myftp.org/recipes/2')
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
