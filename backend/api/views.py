@@ -99,8 +99,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # # Follow.objects.filter(user=request.user)
         # serializer = FollowSerializer(subscriptions, many=True)
         # return Response(serializer.data)
-        user = request.user
-        subscriptions = user.following.all()
+        # user = request.user
+        subscriptions = CustomUser.objects.filter(follow__user=request.user)
         page = self.paginate_queryset(subscriptions)
         serializer = FollowSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
