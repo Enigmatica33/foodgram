@@ -28,10 +28,10 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeSerializer, TagListSerializer)
 
 
-def redirect_short_link(request):
-    link = request.build_absolute_uri()
-    recipe = get_object_or_404(Recipe, short_link=link)
-    return redirect(f'/recipes/{recipe.id}/')
+# def redirect_short_link(request):
+#     link = request.build_absolute_uri()
+#     recipe = get_object_or_404(Recipe, short_link=link)
+#     return redirect(f'/recipes/{recipe.id}/')
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
