@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,16 +73,16 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': 'db.sqlite3',
         # # Меняем настройку Django: теперь для работы будет использоваться
         # # бэкенд postgresql
-        # 'ENGINE': 'django.db.backends.postgresql',
-        # 'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
-        # 'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
-        # 'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        # 'HOST': os.getenv('DB_HOST', ''),
-        # 'PORT': os.getenv('DB_PORT', 5432)
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+        'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
