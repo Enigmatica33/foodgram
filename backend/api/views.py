@@ -101,9 +101,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # return Response(serializer.data)
         # user = request.user
         subscriptions = CustomUser.objects.filter(follow__user=request.user)
-        page = self.paginate_queryset(subscriptions)
-        serializer = FollowSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        # page = self.paginate_queryset(subscriptions)
+        serializer = FollowSerializer(subscriptions, many=True)
+        return Response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
