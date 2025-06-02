@@ -6,7 +6,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path(
-        'https://foodgram.myftp.org/s/c81',
+        's/c81',
         views.redirect_short_link,
         name='redirect_short_link'
     ),
