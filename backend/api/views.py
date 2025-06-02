@@ -20,7 +20,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
 from .filters import AuthorSearchFilter, NameSearchFilter
-from .pagination import CustomPagination
+from .pagination import RecipePagination
 from .permissions import IsAuthor
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
@@ -177,7 +177,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = (AllowAny,)
-    pagination_class = LimitOffsetPagination
+    pagination_class = RecipePagination
+    # pagination_class = LimitOffsetPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = AuthorSearchFilter
 
