@@ -28,9 +28,9 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeSerializer, TagListSerializer)
 
 
-def redirect_short_link(short_link='c81'):
-    recipe = get_object_or_404(Recipe, short_link=short_link)
-    print(recipe)
+def redirect_short_link():
+    # recipe = get_object_or_404(Recipe, short_link=short_link)
+    # print(recipe)
     return redirect('https://foodgram.myftp.org/recipes/2')
 
 
