@@ -366,8 +366,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор для Подписок."""
-    # recipes = serializers.SerializerMethodField(read_only=True)
-    # recipes_count = serializers.SerializerMethodField(read_only=True)
+    recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CustomUser
@@ -377,9 +377,9 @@ class FollowSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            # 'is_subscribed',
-            # 'recipes',
-            # 'recipes_count',
+            'is_subscribed',
+            'recipes',
+            'recipes_count',
             'avatar'
         )
         read_only_fields = ('email', 'username')
@@ -390,29 +390,29 @@ class FollowSerializer(serializers.ModelSerializer):
             )
         ]
 
-    # def get_is_subscribed(self, obj):
-    #     request = self.context.get('request')
-    #     if request:
-    #         return Follow.objects.filter(
-    #             user=request.user,
-    #             following=obj
-    #         ).exists()
-    #     else:
-    #         return False
+    def get_is_subscribed(self, obj):
+        request = self.context.get('request')
+        if request:
+            return Follow.objects.filter(
+                user=request.user,
+                following=obj
+            ).exists()
+        else:
+            return False
 
-    # def get_recipes(self, obj):
-    #     recipes = obj.recipes.all()
-    #     serializer = RecipeMiniSerializer(recipes, many=True, read_only=True)
-    #     return serializer.data
+    def get_recipes(self, obj):
+        recipes = obj.recipes.all()
+        serializer = RecipeMiniSerializer(recipes, many=True, read_only=True)
+        return serializer.data
 
-    # @staticmethod
-    # def get_recipes_count(obj):
-    #     """Метод для получения количества рецептов."""
-    #     return obj.recipes.count()
+    @staticmethod
+    def get_recipes_count(obj):
+        """Метод для получения количества рецептов."""
+        return obj.recipes.count()
 
-    # def validate_following(self, value):
-    #     if self.context['request'].user == value:
-    #         raise serializers.ValidationError(
-    #             'Нельзя подписываться на самого себя!'
-    #         )
-    #     return value
+    def validate_following(self, value):
+        if self.context['request'].user == value:
+            raise serializers.ValidationError(
+                'Нельзя подписываться на самого себя!'
+            )
+        return value

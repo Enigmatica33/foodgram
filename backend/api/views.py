@@ -20,6 +20,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
 from .filters import AuthorSearchFilter, NameSearchFilter
+from .pagination import CustomPagination
 from .permissions import IsAuthor
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
@@ -94,10 +95,15 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         """Просмотр и управление своими подписками."""
-        subscriptions = CustomUser.objects.filter(follow__user=request.user)
-        # Follow.objects.filter(user=request.user)
-        serializer = FollowSerializer(subscriptions, many=True)
-        return Response(serializer.data)
+        # subscriptions = CustomUser.objects.filter(follow__user=request.user)
+        # # Follow.objects.filter(user=request.user)
+        # serializer = FollowSerializer(subscriptions, many=True)
+        # return Response(serializer.data)
+        user = request.user
+        subscriptions = user.following.all()
+        page = self.paginate_queryset(subscriptions)
+        serializer = FollowSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
@@ -334,10 +340,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
 
-class FollowViewSet(viewsets.ModelViewSet):
-    """Представление для подписок."""
-    serializer_class = FollowSerializer
-    permission_classes = [IsAuthenticated]
+# class FollowViewSet(viewsets.ModelViewSet):
+#     """Представление для подписок."""
+#     serializer_class = FollowSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.create(serializer.validated_data)
+#     def perform_create(self, serializer):
+#         serializer.create(serializer.validated_data)
