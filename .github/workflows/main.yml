@@ -108,7 +108,6 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd foodgram/infra || { echo "Directory not found"; exit 1; }
-          sudo docker image prune -f || { echo "Image prune failed"; exit 1; }
           sudo docker compose -f docker-compose.yml pull || { echo "Pull failed"; exit 1; }
           sudo docker compose -f docker-compose.yml down || { echo "Down failed"; exit 1; }
           sudo docker compose -f docker-compose.yml up -d --build || { echo "Up -d failed"; exit 1; }
