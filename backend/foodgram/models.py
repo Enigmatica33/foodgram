@@ -124,7 +124,12 @@ class Recipe(models.Model):
         verbose_name='Время приготовления (мин.)',
         help_text='время приготовления не должно быть меньше 1 минуты'
     )
-
+    short_link = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name='Короткая ссылка на рецепт'
+    )
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата добавления рецепта'

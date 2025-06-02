@@ -3,7 +3,7 @@ from io import BytesIO
 
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -26,6 +26,12 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeMiniSerializer, RecipeReadSerializer,
                           RecipeSerializer, TagListSerializer)
+
+
+def redirect_short_link(request):
+    link = request.build_absolute_uri()
+    recipe = get_object_or_404(Recipe, short_link=link)
+    return redirect(f'/recipes/{recipe.id}/')
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -195,6 +201,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         full_url = f'{request.scheme}://{request.get_host()}'
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
         short_link = f'{full_url}/s/{recipe_hash}'
+        recipe.short_link = short_link
         return Response({'short-link': short_link})
 
     @action(
