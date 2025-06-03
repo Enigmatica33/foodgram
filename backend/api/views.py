@@ -90,20 +90,19 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=['get', 'post'],
+        methods=['get'],
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
         """Просмотр и управление своими подписками."""
-        # subscriptions = CustomUser.objects.filter(follow__user=request.user)
-        # # Follow.objects.filter(user=request.user)
-        # serializer = FollowSerializer(subscriptions, many=True)
-        # return Response(serializer.data)
-        # user = request.user
-        subscriptions = CustomUser.objects.filter(follow__user=request.user)
-        # page = self.paginate_queryset(subscriptions)
-        serializer = FollowSerializer(subscriptions, many=True)
-        return Response(serializer.data)
+        subscriptions = CustomUser.objects.filter(follower__user=request.user)
+        result_pages = self.paginate_queryset(subscriptions)
+        serializer = FollowSerializer(
+            result_pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
