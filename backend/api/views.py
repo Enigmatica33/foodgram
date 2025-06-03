@@ -4,7 +4,6 @@ from io import BytesIO
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from django_filters.rest_framework import DjangoFilterBackend
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -19,9 +18,9 @@ from rest_framework.response import Response
 from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
-from .filters import AuthorSearchFilter, NameSearchFilter
-from .pagination import RecipePagination
-from .permissions import IsAuthor
+from .filters import IngredientFilter, RecipeFilter
+from .pagination import LimitPagination
+from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
                           IngredientListSerializer, MeSerializer,
@@ -47,7 +46,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         serializer = CustomUserCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
@@ -95,14 +94,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         """Просмотр и управление своими подписками."""
-        subscriptions = CustomUser.objects.filter(following__user=request.user)
-        result_pages = self.paginate_queryset(subscriptions)
+        subscriptions = CustomUser.objects.filter(
+            following__user=request.user
+        ).order_by('username')
+        paginator = LimitPagination()
+        result_pages = paginator.paginate_queryset(subscriptions, request)
         serializer = FollowSerializer(
             result_pages,
             many=True,
-            context={'request': request}
         )
-        return self.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
@@ -153,8 +154,8 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 {'error': 'Пользователь не найден'},
                 status=status.HTTP_404_NOT_FOUND
             )
-        current_password = request.data.get("current_password")
-        new_password = request.data.get("new_password")
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
         errors = []
         if not user.check_password(current_password):
             errors.append('Неверный текущий пароль')
@@ -176,21 +177,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = (AllowAny,)
-    pagination_class = RecipePagination
-    # pagination_class = LimitOffsetPagination
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = AuthorSearchFilter
+    pagination_class = LimitPagination
+    filterset_class = RecipeFilter
 
-    # def get_permissions(self):
-    #     """Определяем права доступа для создания и обновления."""
-    #     if self.request.method == 'POST':
-    #         self.permission_classes = [IsAuthenticated]
-    #     elif self.request.method in ['PUT', 'PATCH', 'DELETE']:
-    #         self.permission_classes = [IsAuthorOrReadOnly]
-    #     else:
-    #         self.permission_classes = [AllowAny]
-
-    #     return super().get_permissions()
+    def get_permissions(self):
+        """Определяем права доступа для разных HTTP методов."""
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAuthenticated]
+        elif self.request.method == 'PATCH':
+            self.permission_classes = [IsAuthorOrReadOnly]
+        elif self.request.method == 'DELETE' and self.action == 'get_favorite':
+            self.permission_classes = [IsAuthenticated]
+        elif (self.request.method == 'DELETE'
+              and self.action == 'get_shopping_cart'):
+            self.permission_classes = [IsAuthenticated]
+        elif self.request.method == 'DELETE':
+            self.permission_classes = [IsAuthorOrReadOnly]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         """Авторизованный пользователь создает пост."""
@@ -336,14 +339,5 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientListSerializer
     pagination_class = None
-    filterset_class = NameSearchFilter
+    filterset_class = IngredientFilter
     http_method_names = ['get']
-
-
-# class FollowViewSet(viewsets.ModelViewSet):
-#     """Представление для подписок."""
-#     serializer_class = FollowSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def perform_create(self, serializer):
-#         serializer.create(serializer.validated_data)

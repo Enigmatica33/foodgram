@@ -1,8 +1,8 @@
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 
 
-class RecipePagination(PageNumberPagination):
-    """Кастомный пагинатор для вывода 6 элементов на странице."""
-
-    page_size_query_param = 'limit'
-    page_size = 6
+class LimitPagination(LimitOffsetPagination):
+    """Кастомный пагинатор для вывода элементов на странице."""
+    limit_query_param = 'limit'
+    default_limit = 6
+    max_limit = 100

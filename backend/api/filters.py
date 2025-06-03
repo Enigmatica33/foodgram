@@ -1,10 +1,10 @@
 from django_filters import rest_framework as filters
 
-from foodgram.models import Ingredient, Recipe
+from foodgram.models import Ingredient, Recipe, Tag
 
 
-class NameSearchFilter(filters.FilterSet):
-    """Фильтр для ингредиента по названию."""
+class IngredientFilter(filters.FilterSet):
+    """Фильтр для поиска ингредиента по названию."""
     name = filters.CharFilter(field_name='name', method='filter_by_name')
 
     class Meta:
@@ -15,44 +15,31 @@ class NameSearchFilter(filters.FilterSet):
         return queryset.filter(name__istartswith=value)
 
 
-class AuthorSearchFilter(filters.FilterSet):
+class RecipeFilter(filters.FilterSet):
     """Фильтр для поиска рецепта по автору."""
     author = filters.NumberFilter(
         field_name='author',
     )
+    tags = filters.ModelMultipleChoiceFilter(
+        field_name="tags__slug",
+        to_field_name="slug",
+        queryset=Tag.objects.all(),
+    )
+    is_favorited = filters.BooleanFilter(method='is_favorited_method')
+    is_in_shopping_cart = filters.BooleanFilter(
+        method='is_in_shopping_cart_method'
+    )
+
+    def is_favorited_method(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(recipe_favorite__user=self.request.user)
+        return queryset
+
+    def is_in_shopping_cart_method(self, queryset, name, value):
+        if value and self.request.user.is_authenticated:
+            return queryset.filter(recipe_shopping__user=self.request.user)
+        return queryset
 
     class Meta:
         model = Recipe
-        fields = ['author']
-
-
-class TagFilter(filters.FilterSet):
-    tags = filters.CharFilter(field_name='tags__slug', method='filter_by_name')
-
-    class Meta:
-        model = Recipe
-        fields = ['tags__slug']
-
-    def filter_by_name(self, queryset, tags__slug, value):
-        return queryset.filter(tags__slug=value)
-
-    # """Фильтр для поиска рецепта по тегам."""
-    # tag = filters.ModelMultipleChoiceFilter(
-    #     queryset=Tag.objects.all(),
-    #     field_name='tags__slug',
-    #     to_field_name='slug'
-    # )
-
-    # class Meta:
-    #     model = Recipe
-    #     fields = ['tags']
-
-    # @classmethod
-    # def get_choices(cls):
-    #     # Извлечение уникальных значений категорий из базы данных
-    #     return Tag.objects.values_list('slug', flat=True).distinct()
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # Установка динамических choices
-    #     self.base_filters['tags'].extra['choices'] = self.get_choices()
+        fields = ['author', 'is_favorited', 'is_in_shopping_cart', 'tags']
