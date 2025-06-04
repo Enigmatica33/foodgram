@@ -205,50 +205,46 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        instance = self.instance
-        if instance is None:
-            if 'tags' not in data or not data['tags']:
-                raise serializers.ValidationError('Укажите хотя бы один тэг.')
-            if 'ingredients' not in data or not data['ingredients']:
-                raise serializers.ValidationError('Укажите ингредиенты.')
-            if 'image' not in data or not data['image']:
+        if 'tags' not in data or not data['tags']:
+            raise serializers.ValidationError('Укажите хотя бы один тэг.')
+        if 'ingredients' not in data or not data['ingredients']:
+            raise serializers.ValidationError('Укажите ингредиенты.')
+        if 'image' not in data or not data['image']:
+            raise serializers.ValidationError('Добавьте изображенние рецепта.')
+        ingredient_ids = set()
+        tag_ids = set()
+        for ingredients in data['ingredients']:
+            ingredient_id = ingredients['id']
+            amount = ingredients['amount']
+            try:
+                Ingredient.objects.get(pk=ingredient_id)
+            except ObjectDoesNotExist:
                 raise serializers.ValidationError(
-                    'Добавьте изображенние рецепта.'
+                    f'Ингредиент c ID {ingredient_id} не существует.'
                 )
-            ingredient_ids = set()
-            tag_ids = set()
-            for ingredients in data['ingredients']:
-                ingredient_id = ingredients['id']
-                amount = ingredients['amount']
-                try:
-                    Ingredient.objects.get(pk=ingredient_id)
-                except ObjectDoesNotExist:
-                    raise serializers.ValidationError(
-                        f'Ингредиент c ID {ingredient_id} не существует.'
-                    )
-                if amount < 1:
-                    raise serializers.ValidationError(
-                        'Необходимо указать количество ингредиента'
-                    )
-                if ingredient_id in ingredient_ids:
-                    raise serializers.ValidationError(
-                        f'Ингредиент c ID {ingredient_id} уже указан.'
-                    )
-                ingredient_ids.add(ingredient_id)
-            for tags in data['tags']:
-                tag_id = tags.id
-                try:
-                    Tag.objects.get(pk=tag_id)
-                except ObjectDoesNotExist:
-                    raise serializers.ValidationError(
-                        f'Ингредиент c ID {tag_id} не существует.'
-                    )
-                if tag_id in tag_ids:
-                    raise serializers.ValidationError(
-                        f'Ингредиент c ID {tag_id} уже указан.'
-                    )
-                tag_ids.add(tag_id)
-            return data
+            if amount < 1:
+                raise serializers.ValidationError(
+                    'Необходимо указать количество ингредиента'
+                )
+            if ingredient_id in ingredient_ids:
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {ingredient_id} уже указан.'
+                )
+            ingredient_ids.add(ingredient_id)
+        for tags in data['tags']:
+            tag_id = tags.id
+            try:
+                Tag.objects.get(pk=tag_id)
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {tag_id} не существует.'
+                )
+            if tag_id in tag_ids:
+                raise serializers.ValidationError(
+                    f'Ингредиент c ID {tag_id} уже указан.'
+                )
+            tag_ids.add(tag_id)
+        return data
 
     def create_recipe_ingredient(self, ingredients, recipe):
         """Создание записи в таблице RecipeIngredient."""
@@ -280,8 +276,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.name = validated_data['name']
         instance.text = validated_data['text']
         instance.cooking_time = validated_data['cooking_time']
-        if 'image' in validated_data and validated_data['image']:
-            instance.image = validated_data['image']
+        instance.image = instance.image
         instance.ingredients.through.objects.filter(recipe=instance).delete()
         instance.tags.clear()
         self.create_recipe_ingredient(ingredients, instance)
