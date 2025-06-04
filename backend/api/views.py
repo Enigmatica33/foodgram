@@ -1,13 +1,7 @@
 import hashlib
-from io import BytesIO
 
 from django.db.models import Sum
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
@@ -20,6 +14,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
 
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
+from .pdf import pdf_creating
 from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
@@ -300,32 +295,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__name',
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount')).order_by('ingredient__name')
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=letter)
-        width, height = letter
-        pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
-        p.setFont('DejaVuSans', 16)
-        p.drawString(100, height - 50, 'Список покупок')
-        y_position = height - 100
-        p.setFont('DejaVuSans', 20)
-        for ingredient in ingredients:
-            text = f"-{ingredient['ingredient__name']}: {ingredient['amount']}"
-            f"{ingredient['ingredient__measurement_unit']}"
-            p.drawString(100, y_position, text.encode('utf-8').decode('utf-8'))
-            y_position -= 30
-            if y_position < 50:
-                p.showPage()
-                p.setFont('DejaVuSans', 12)
-                y_position = height - 100
-        p.save()
-        buffer.seek(0)
-        response = HttpResponse(
-            buffer,
-            content_type='application/pdf'
-        )
-        response['Content-Disposition'] = 'attachment; '
-        f'filename="{request.user.username}_shopping_list.pdf"'
-        return response
+        pdf_creating(ingredients)
 
 
 class TagViewSet(viewsets.ModelViewSet):
