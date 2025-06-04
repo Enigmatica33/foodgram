@@ -13,7 +13,7 @@ def pdf_creating(self, ingredients, username):
     width, height = letter
     # Регистрируем шрифт и устанавливаем его размер для всего документа.
     pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
-    p.setFont('DejaVuSans', 12)
+    # p.setFont('DejaVuSans', 12)
     # Устанавливаем заголовок документа
     p.setFont('DejaVuSans', 20)
     p.drawString(100, height - 50, 'Список покупок')
@@ -27,7 +27,7 @@ def pdf_creating(self, ingredients, username):
         y_position -= text_offset
         if y_position < 50:
             p.showPage()
-            # p.setFont('DejaVuSans', 12)
+            p.setFont('DejaVuSans', 20)
             y_position = height - 100
     p.save()
     buffer.seek(0)
