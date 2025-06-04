@@ -23,7 +23,6 @@ services:
     image: enigmatica/foodgram_frontend
     volumes:
       - ../frontend/:/app/result_build/
-      # - static:/frontend_static
     env_file: .env
 
   nginx:
