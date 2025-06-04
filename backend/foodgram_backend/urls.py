@@ -6,7 +6,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path(
-        's/c81',
+        's/<str:short_link>',
         views.redirect_short_link,
         name='redirect_short_link'
     ),

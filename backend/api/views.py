@@ -23,11 +23,9 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeSerializer, TagListSerializer)
 
 
-def redirect_short_link(request):
-    # recipe = get_object_or_404(Recipe, short_link=short_link)
-    # serializer = Rec
-
-    return redirect('https://foodgram.myftp.org/recipes/2')
+def redirect_short_link(request, short_link):
+    recipe = get_object_or_404(Recipe, short_link=short_link)
+    return redirect(f'/api/recipes/{recipe.id}/')
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
