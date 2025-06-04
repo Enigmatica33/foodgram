@@ -27,7 +27,7 @@ def pdf_creating(self, ingredients, username):
         y_position -= text_offset
         if y_position < 50:
             p.showPage()
-            p.setFont('DejaVuSans', 12)
+            # p.setFont('DejaVuSans', 12)
             y_position = height - 100
     p.save()
     buffer.seek(0)
