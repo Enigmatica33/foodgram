@@ -25,7 +25,7 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 def redirect_short_link(request, short_link):
     recipe = get_object_or_404(Recipe, short_link=short_link)
-    return redirect(f'/api/recipes/{recipe.id}/')
+    return redirect(recipe)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
