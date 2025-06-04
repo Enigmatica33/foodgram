@@ -209,8 +209,12 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Укажите хотя бы один тэг.')
         if 'ingredients' not in data or not data['ingredients']:
             raise serializers.ValidationError('Укажите ингредиенты.')
-        if 'image' not in data or not data['image']:
-            raise serializers.ValidationError('Добавьте изображенние рецепта.')
+        instance = self.instance
+        if instance is None:
+            if 'image' not in data or not data['image']:
+                raise serializers.ValidationError(
+                    'Добавьте изображенние рецепта.'
+                )
         ingredient_ids = set()
         tag_ids = set()
         for ingredients in data['ingredients']:
@@ -276,7 +280,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.name = validated_data['name']
         instance.text = validated_data['text']
         instance.cooking_time = validated_data['cooking_time']
-        instance.image = instance.image
         instance.ingredients.through.objects.filter(recipe=instance).delete()
         instance.tags.clear()
         self.create_recipe_ingredient(ingredients, instance)
