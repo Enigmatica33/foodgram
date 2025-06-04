@@ -1,6 +1,7 @@
 import hashlib
 
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -24,8 +25,11 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 
 def redirect_short_link(request, short_link):
-    recipe = get_object_or_404(Recipe, short_link=short_link)
-    return redirect(recipe)
+    recipe = Recipe.objects.filter(short_link=short_link)
+    response = HttpResponse(status=302)
+    response['Location'] = f'/recipe/{recipe.id}/'
+
+    return response
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
