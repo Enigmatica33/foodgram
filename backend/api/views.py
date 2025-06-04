@@ -222,7 +222,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        # permission_classes=(IsAuthenticated,)
+        url_path='favorite',
+        url_name='favorite',
+        permission_classes=(IsAuthenticated,)
     )
     def get_favorite(self, request, pk=None):
         """Добавление рецепта в избранное."""
