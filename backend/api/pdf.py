@@ -7,7 +7,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 
-def pdf_creating(request, objects):
+def pdf_creating(self, ingredients, username):
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
@@ -16,7 +16,7 @@ def pdf_creating(request, objects):
     p.drawString(100, height - 50, 'Список покупок')
     y_position = height - 100
     p.setFont('DejaVuSans', 20)
-    for ingredient in objects:
+    for ingredient in ingredients:
         text = f"-{ingredient['ingredient__name']}: {ingredient['amount']}"
         f"{ingredient['ingredient__measurement_unit']}"
         p.drawString(100, y_position, text.encode('utf-8').decode('utf-8'))
@@ -32,5 +32,5 @@ def pdf_creating(request, objects):
         content_type='application/pdf'
     )
     response['Content-Disposition'] = 'attachment; '
-    f'filename="{request.user.username}_shopping_list.pdf"'
+    f'filename="{username}_shopping_list.pdf"'
     return response
