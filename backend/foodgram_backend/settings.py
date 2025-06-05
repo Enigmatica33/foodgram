@@ -64,7 +64,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
-
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/(api|admin)/.*$'
 
