@@ -1,7 +1,6 @@
 import hashlib
 
 from django.db.models import Sum
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -23,12 +22,12 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeMiniSerializer, RecipeReadSerializer,
                           RecipeSerializer, TagListSerializer)
 
-
 # def redirect_short_link(short_link):
 #     recipe = Recipe.objects.filter(short_link=short_link)
 #     response = HttpResponse(status=302)
 #     response['Location'] = f'/recipe/{recipe.id}/'
 #     return response
+
 
 def check_and_create_object(model, recipe, user):
     """Добавляем рецепт в избранное/корзину."""
