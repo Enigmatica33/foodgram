@@ -24,12 +24,42 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           RecipeSerializer, TagListSerializer)
 
 
-def redirect_short_link(request, short_link):
-    recipe = Recipe.objects.filter(short_link=short_link)
-    response = HttpResponse(status=302)
-    response['Location'] = f'/recipe/{recipe.id}/'
+# def redirect_short_link(short_link):
+#     recipe = Recipe.objects.filter(short_link=short_link)
+#     response = HttpResponse(status=302)
+#     response['Location'] = f'/recipe/{recipe.id}/'
+#     return response
 
-    return response
+def check_and_create_object(model, recipe, user):
+    """Добавляем рецепт в избранное/корзину."""
+    if not model.objects.filter(
+            user=user,
+            recipe=recipe
+    ).exists():
+        serializer = RecipeMiniSerializer(recipe)
+        model.objects.create(user=user, recipe=recipe)
+    else:
+        return Response(
+            {'error': 'Рецепт уже добавлен в избранное'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+def check_and_delete_object(model, recipe, user):
+    """Удаляем рецепт из избранного/корзины."""
+    try:
+        object = model.objects.get(
+            user=user,
+            recipe=recipe
+        )
+    except model.DoesNotExist:
+        return Response(
+            {'error': 'Рецепт не найден.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    object.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -209,7 +239,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         try:
             recipe = Recipe.objects.get(pk=pk)
         except Recipe.DoesNotExist:
-            raise NotFound("Recipe not found")
+            raise NotFound('Рецепт не найден!')
         full_url = f'{request.scheme}://{request.get_host()}'
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
         short_link = f'{full_url}/s/{recipe_hash}'
@@ -227,29 +257,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_favorite(self, request, pk=None):
         """Добавление рецепта в избранное."""
         recipe = self.get_object()
+        user = request.user
         if request.method == 'POST':
-            if not Favorite.objects.filter(
-                user=request.user,
-                recipe=recipe
-            ).exists():
-                serializer = RecipeMiniSerializer(recipe)
-                Favorite.objects.create(user=request.user, recipe=recipe)
-            else:
-                return Response(
-                    {'detail': 'Рецепт уже добавлен в избранное'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return check_and_create_object(Favorite, recipe, user)
         if request.method == 'DELETE':
-            try:
-                favorite = Favorite.objects.get(
-                    user=request.user,
-                    recipe=recipe
-                )
-            except Favorite.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            favorite.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return check_and_delete_object(Favorite, recipe, user)
 
     @action(
         detail=True,
@@ -261,29 +273,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_shopping_cart(self, request, pk=None):
         """Добавление рецепта в корзину."""
         recipe = self.get_object()
+        user = request.user
         if request.method == 'POST':
-            if not ShoppingCart.objects.filter(
-                user=request.user,
-                recipe=recipe
-            ).exists():
-                serializer = RecipeMiniSerializer(recipe)
-                ShoppingCart.objects.create(user=request.user, recipe=recipe)
-            else:
-                return Response(
-                    {'detail': 'Рецепт уже добавлен в корзину'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return check_and_create_object(ShoppingCart, recipe, user)
         if request.method == 'DELETE':
-            try:
-                shopping_cart = ShoppingCart.objects.get(
-                    user=request.user,
-                    recipe=recipe
-                )
-            except ShoppingCart.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            shopping_cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return check_and_delete_object(ShoppingCart, recipe, user)
 
     @action(
         detail=False,

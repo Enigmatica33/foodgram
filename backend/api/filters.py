@@ -21,8 +21,8 @@ class RecipeFilter(filters.FilterSet):
         field_name='author',
     )
     tags = filters.ModelMultipleChoiceFilter(
-        field_name="tags__slug",
-        to_field_name="slug",
+        field_name='tags__slug',
+        to_field_name='slug',
         queryset=Tag.objects.all(),
     )
     is_favorited = filters.BooleanFilter(method='is_favorited_method')

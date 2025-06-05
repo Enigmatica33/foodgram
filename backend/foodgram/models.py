@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator
-# , RegexValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 from .constants import (MAX_EMAIL, MAX_INGREDIENTS, MAX_MEASUREMENT_UNIT,
@@ -15,7 +14,7 @@ class CustomUser(AbstractUser):
         # blank=False,
         # null=False,
         unique=True,
-        # validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
+        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
     )
     first_name = models.CharField(
         max_length=MAX_USER,
@@ -91,13 +90,6 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Автор рецепта'
     )
-    # related_name='recipes' – этот параметр задает обратное имя для связи.
-    # Это означает, что вы сможете получить все рецепты,
-    # связанные с конкретным автором, используя
-    #           author_instance.recipes.all(),
-    # где author_instance – это экземпляр модели CustomUser.
-    # Это удобно для запроса всех рецептов,
-    # связанных с определенным пользователем.
     name = models.CharField(
         max_length=MAX_RECIPE_NAME,
         verbose_name='Название рецепта'
@@ -138,10 +130,10 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'рецепт'
         verbose_name_plural = 'Рецепты'
-        ordering = ('pub_date',)
+        ordering = ('-pub_date',)
 
     def __str__(self):
-        return f'{self.name} от {self.author}'
+        return f'Рецепт {self.name} от пользователя {self.author}'
 
 
 class RecipeTag(models.Model):
@@ -182,12 +174,12 @@ class RecipeIngredient(models.Model):
 
     class Meta:
         pass
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=('recipe', 'ingredient'),
-        #         name='unique_recipe_ingredient'
-        #     )
-        # ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=('recipe', 'ingredient'),
+                name='unique_recipe_ingredient'
+            )
+        ]
 
     def __str__(self):
         return f'{self.recipe} {self.ingredient}'
@@ -248,7 +240,10 @@ class ShoppingCart(models.Model):
         ordering = ('recipe',)
 
     def __str__(self):
-        return f'{self.user} {self.recipe}'
+        return (
+            f'Пользователь {self.user} добавил '
+            f'в корзину рецепт {self.recipe}'
+        )
 
 
 class Favorite(models.Model):
@@ -273,4 +268,7 @@ class Favorite(models.Model):
         ordering = ('recipe',)
 
     def __str__(self):
-        return f'{self.user} {self.recipe}'
+        return (
+            f'Пользователь {self.user} добавил '
+            f'в избранное рецепт {self.recipe}'
+        )
