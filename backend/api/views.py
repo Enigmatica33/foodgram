@@ -299,7 +299,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagListSerializer
     pagination_class = None
-    http_method_names = ['get',]
+    http_method_names = ['get']
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
