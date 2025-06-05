@@ -1,17 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (CustomUser, Ingredient, Recipe, RecipeIngredient,
-                     RecipeTag, Tag)
+from .models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
+                     RecipeIngredient, RecipeTag, ShoppingCart, Tag)
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    # Количество пустых форм,
-    # доступных для добавления новых ингредиентов
-    # Можно добавить дополнительные настройки для отображения
-    # полей в админ-панели, если это необходимо
     fields = ('ingredient', 'amount')
     autocomplete_fields = ('ingredient',)
 
@@ -52,10 +48,24 @@ class IngredientAdmin(admin.ModelAdmin):
     actions = ['delete_selected']
 
 
+class FavoriteAdmin(admin.ModelAdmin):
+    model = Favorite
+
+
+class FollowAdmin(admin.ModelAdmin):
+    model = Follow
+
+
+class ShoppingCartAdmin(admin.ModelAdmin):
+    model = ShoppingCart
+
+
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(Follow, FollowAdmin)
 admin.site.empty_value_display = 'Не задано'
 # admin.site.register(RecipeTag)
 # admin.site.register(RecipeIngredient)
