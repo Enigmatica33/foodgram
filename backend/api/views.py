@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
+from .check_create_delete import check_and_create, check_and_delete
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import LimitPagination
 from .pdf import pdf_creating
@@ -19,8 +20,8 @@ from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
                           IngredientListSerializer, MeSerializer,
-                          RecipeMiniSerializer, RecipeReadSerializer,
-                          RecipeSerializer, TagListSerializer)
+                          RecipeReadSerializer, RecipeSerializer,
+                          TagListSerializer)
 
 # def redirect_short_link(short_link):
 #     recipe = Recipe.objects.filter(short_link=short_link)
@@ -29,64 +30,64 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 #     return response
 
 
-def check_and_create_object(model, recipe, user):
-    """Добавляем рецепт в избранное/корзину."""
-    if not model.objects.filter(
-            user=user,
-            recipe=recipe
-    ).exists():
-        model.objects.create(user=user, recipe=recipe)
-        serializer = RecipeMiniSerializer(recipe)
-    else:
-        return Response(
-            {'error': 'Рецепт уже добавлен в избранное'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+# def check_and_create_object(model, recipe, user):
+#     """Добавляем рецепт в избранное/корзину."""
+#     if not model.objects.filter(
+#             user=user,
+#             recipe=recipe
+#     ).exists():
+#         model.objects.create(user=user, recipe=recipe)
+#         serializer = RecipeMiniSerializer(recipe)
+#     else:
+#         return Response(
+#             {'error': 'Рецепт уже добавлен в избранное'},
+#             status=status.HTTP_400_BAD_REQUEST
+#         )
+#     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-def check_and_delete_object(model, recipe, user):
-    """Удаляем рецепт из избранного/корзины."""
-    try:
-        object = model.objects.get(
-            user=user,
-            recipe=recipe
-        )
-    except model.DoesNotExist:
-        return Response(
-            {'error': 'Рецепт не найден.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    object.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+# def check_and_delete_object(model, recipe, user):
+#     """Удаляем рецепт из избранного/корзины."""
+#     try:
+#         object = model.objects.get(
+#             user=user,
+#             recipe=recipe
+#         )
+#     except model.DoesNotExist:
+#         return Response(
+#             {'error': 'Рецепт не найден.'},
+#             status=status.HTTP_400_BAD_REQUEST
+#         )
+#     object.delete()
+#     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-def check_and_create_subscription(model, author, user):
-    """Создаем подписку."""
-    if not model.objects.filter(
-            user=user,
-            following=author
-    ).exists():
-        model.objects.create(user=user, following=author)
-        serializer = FollowSerializer(author)
-    else:
-        return Response(
-            {'detail': 'Подписка уже существует'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+# def check_and_create_subscription(model, author, user):
+#     """Создаем подписку."""
+#     if not model.objects.filter(
+#             user=user,
+#             following=author
+#     ).exists():
+#         model.objects.create(user=user, following=author)
+#         serializer = FollowSerializer(author)
+#     else:
+#         return Response(
+#             {'detail': 'Подписка уже существует'},
+#             status=status.HTTP_400_BAD_REQUEST
+#         )
+#     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-def check_and_delete_subscription(model, author, user):
-    try:
-        subscription = model.objects.get(
-            user=user,
-            following=author
-        )
-    except model.DoesNotExist:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-    subscription.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+# def check_and_delete_subscription(model, author, user):
+#     try:
+#         subscription = model.objects.get(
+#             user=user,
+#             following=author
+#         )
+#     except model.DoesNotExist:
+#         return Response(status=status.HTTP_400_BAD_REQUEST)
+#     subscription.delete()
+#     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -119,9 +120,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                     {'error': 'Нельзя подписываться на самого себя!'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            return check_and_create_subscription(Follow, author, user)
+            # return check_and_create_subscription(Follow, author, user)
+            return check_and_create(
+                Follow,
+                author,
+                user,
+                item_type='following'
+            )
         if request.method == 'DELETE':
-            return check_and_delete_subscription(Follow, author, user)
+            # return check_and_delete_subscription(Follow, author, user)
+            return check_and_delete(
+                Follow,
+                author,
+                user,
+                item_type='following'
+            )
 
     @action(
         detail=False,
@@ -267,9 +280,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
         user = request.user
         if request.method == 'POST':
-            return check_and_create_object(Favorite, recipe, user)
+            return check_and_create(Favorite, recipe, user, item_type='recipe')
+            # return check_and_create_object(Favorite, recipe, user)
         if request.method == 'DELETE':
-            return check_and_delete_object(Favorite, recipe, user)
+            return check_and_delete(Favorite, recipe, user, item_type='recipe')
+            # return check_and_delete_object(Favorite, recipe, user)
 
     @action(
         detail=True,
@@ -283,9 +298,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = self.get_object()
         user = request.user
         if request.method == 'POST':
-            return check_and_create_object(ShoppingCart, recipe, user)
+            return check_and_create(
+                ShoppingCart,
+                recipe,
+                user,
+                item_type='recipe'
+            )
+            # return check_and_create_object(ShoppingCart, recipe, user)
         if request.method == 'DELETE':
-            return check_and_delete_object(ShoppingCart, recipe, user)
+            return check_and_create(
+                ShoppingCart,
+                recipe,
+                user,
+                item_type='recipe'
+            )
+            # return check_and_delete_object(ShoppingCart, recipe, user)
 
     @action(
         detail=False,
