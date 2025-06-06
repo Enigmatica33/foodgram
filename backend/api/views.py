@@ -78,32 +78,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             following__user=request.user
         ).order_by('username')
         subscriptions = subscriptions.prefetch_related('recipes')
-        paginator = self.pagination_class()
+        paginator = CustomPagination()
         result_pages = paginator.paginate_queryset(
             subscriptions,
             request,
             view=self
         )
-        recipes_limit_str = request.query_params.get('recipes_limit')
-        recipes_limit = None
-        if recipes_limit_str:
-            try:
-                recipes_limit = int(recipes_limit_str)
-                if recipes_limit < 0:
-                    recipes_limit = None
-            except ValueError:
-                return Response(
-                    {'errors': 'recipes_limit должен быть целым числом.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            recipes_limit = None
-        serializer_context = {'request': request, }
-        if recipes_limit is not None:
-            serializer_context['recipes_limit'] = recipes_limit
         serializer = FollowSerializer(
             result_pages,
             many=True,
-            context=serializer_context
+            context={'request': request}
         )
         return paginator.get_paginated_response(serializer.data)
 
