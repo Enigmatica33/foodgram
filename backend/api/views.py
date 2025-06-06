@@ -120,7 +120,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                     {'error': 'Нельзя подписываться на самого себя!'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            # return check_and_create_subscription(Follow, author, user)
             return check_and_create(
                 Follow,
                 author,
@@ -128,7 +127,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 item_type='following'
             )
         if request.method == 'DELETE':
-            # return check_and_delete_subscription(Follow, author, user)
             return check_and_delete(
                 Follow,
                 author,
@@ -142,7 +140,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
-        """Просмотр и управление своими подписками."""
+        """Просмотр и управление подписками."""
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
@@ -281,10 +279,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = request.user
         if request.method == 'POST':
             return check_and_create(Favorite, recipe, user, item_type='recipe')
-            # return check_and_create_object(Favorite, recipe, user)
         if request.method == 'DELETE':
             return check_and_delete(Favorite, recipe, user, item_type='recipe')
-            # return check_and_delete_object(Favorite, recipe, user)
 
     @action(
         detail=True,
@@ -304,15 +300,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 user,
                 item_type='recipe'
             )
-            # return check_and_create_object(ShoppingCart, recipe, user)
         if request.method == 'DELETE':
-            return check_and_create(
+            return check_and_delete(
                 ShoppingCart,
                 recipe,
                 user,
                 item_type='recipe'
             )
-            # return check_and_delete_object(ShoppingCart, recipe, user)
 
     @action(
         detail=False,
