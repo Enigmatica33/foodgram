@@ -35,8 +35,8 @@ def check_and_create_object(model, recipe, user):
             user=user,
             recipe=recipe
     ).exists():
-        serializer = RecipeMiniSerializer(recipe)
         model.objects.create(user=user, recipe=recipe)
+        serializer = RecipeMiniSerializer(recipe)
     else:
         return Response(
             {'error': 'Рецепт уже добавлен в избранное'},
@@ -58,6 +58,34 @@ def check_and_delete_object(model, recipe, user):
             status=status.HTTP_400_BAD_REQUEST
         )
     object.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def check_and_create_subscription(model, author, user):
+    """Создаем подписку."""
+    if not model.objects.filter(
+            user=user,
+            following=author
+    ).exists():
+        model.objects.create(user=user, following=author)
+        serializer = FollowSerializer(author)
+    else:
+        return Response(
+            {'detail': 'Подписка уже существует'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+def check_and_delete_subscription(model, author, user):
+    try:
+        subscription = model.objects.get(
+            user=user,
+            following=author
+        )
+    except model.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    subscription.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -84,35 +112,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     def subscribe(self, request, pk=None):
         """Создание подписки."""
         author = get_object_or_404(CustomUser, id=pk)
+        user = request.user
         if request.method == 'POST':
-            if request.user == author:
+            if user == author:
                 return Response(
                     {'error': 'Нельзя подписываться на самого себя!'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            if not Follow.objects.filter(
-                user=request.user,
-                following=author
-            ).exists():
-                serializer = FollowSerializer(author)
-                Follow.objects.create(user=request.user, following=author)
-            else:
-                return Response(
-                    {'detail': 'Подписка уже существует'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+            return check_and_create_subscription(Follow, author, user)
         if request.method == 'DELETE':
-            try:
-                subscription = Follow.objects.get(
-                    user=request.user,
-                    following=author
-                )
-            except Follow.DoesNotExist:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return check_and_delete_subscription(Follow, author, user)
 
     @action(
         detail=False,
