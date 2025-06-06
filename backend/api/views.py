@@ -76,7 +76,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         """Просмотр и управление подписками."""
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
-        ).order_by('username').prefetch_related('recipes')
+        ).order_by('username')
         paginator = CustomPagination()
         page = request.query_params.get('page')
         limit = request.query_params.get('limit')
