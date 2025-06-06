@@ -90,14 +90,14 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             )
         result_pages = paginator.paginate_queryset(
             subscriptions,
-            context=context
+            request
         )
         serializer = FollowSerializer(
             result_pages,
             many=True,
-            context={'request': request}
+            context=context
         )
-        return paginator.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data) 
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
