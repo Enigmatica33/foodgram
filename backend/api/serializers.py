@@ -403,7 +403,22 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         recipes = obj.recipes.all()
-        serializer = RecipeMiniSerializer(recipes, many=True, read_only=True)
+        recipes_limit_from_context = self.context.get('recipes_limit')
+        if recipes_limit_from_context is not None:
+            try:
+                limit = int(recipes_limit_from_context)
+                if limit >= 0:
+                    recipes = recipes[:limit]
+            except ValueError:
+                raise ValueError(
+                    f'Значение {limit} должно быть больше 0'
+                )
+        serializer = RecipeMiniSerializer(
+            recipes,
+            many=True,
+            read_only=True,
+            context=self.context
+        )
         return serializer.data
 
     @staticmethod
