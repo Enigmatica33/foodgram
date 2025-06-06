@@ -20,11 +20,15 @@ class RecipeTagInline(admin.TabularInline):
 
 class RecipeAdmin(admin.ModelAdmin):
     model = Recipe
-    list_display = ['author', 'name']
+    list_display = ['author', 'name', 'favorites_count']
     list_filter = ['tags']
-    search_fields = ['author', 'name']
+    search_fields = ['author__username', 'name']
     actions = ['delete_selected']
     inlines = (RecipeIngredientInline, RecipeTagInline)
+
+    def favorites_count(self, obj):
+        return obj.favorite_set.count()
+    favorites_count.short_description = 'Количество добавлений в избранное'
 
 
 class CustomUserAdmin(UserAdmin):
@@ -44,7 +48,7 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     model = Ingredient
     list_display = ['name', 'measurement_unit']
-    search_fields = ['name']
+    search_fields = ['name', 'measurement_unit']
     actions = ['delete_selected']
 
 
