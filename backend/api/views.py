@@ -76,13 +76,26 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         """Просмотр и управление подписками."""
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
-        ).order_by('username')
-        subscriptions = subscriptions.prefetch_related('recipes')
+        ).order_by('username').prefetch_related('recipes')
         paginator = CustomPagination()
+        page = request.query_params.get('page')
+        limit = request.query_params.get('limit')
+        recipes_limit = request.query_params.get('recipes_limit')
+        try:
+            page = int(page)
+            limit = int(limit)
+            recipes_limit = int(recipes_limit)
+            if page <= 0 or limit <= 0 or recipes_limit <= 0:
+                raise ValueError('Неверное значение параметров.')
+        except ValueError:
+            return Response(
+                {"error": "Параметры 'page', 'limit', 'recipes_limit' "
+                    "должны быть положительными целыми числами."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         result_pages = paginator.paginate_queryset(
             subscriptions,
-            request,
-            view=self
+            request
         )
         serializer = FollowSerializer(
             result_pages,
