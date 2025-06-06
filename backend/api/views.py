@@ -12,9 +12,9 @@ from rest_framework.response import Response
 from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
-from .check_create_delete import check_and_create, check_and_delete
 from .filters import IngredientFilter, RecipeFilter
-from .pagination import LimitPagination
+from .functions import check_and_create, check_and_delete
+from .pagination import CustomPagination
 from .pdf import pdf_creating
 from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
@@ -22,72 +22,6 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           TagListSerializer)
-
-# def redirect_short_link(short_link):
-#     recipe = Recipe.objects.filter(short_link=short_link)
-#     response = HttpResponse(status=302)
-#     response['Location'] = f'/recipe/{recipe.id}/'
-#     return response
-
-
-# def check_and_create_object(model, recipe, user):
-#     """Добавляем рецепт в избранное/корзину."""
-#     if not model.objects.filter(
-#             user=user,
-#             recipe=recipe
-#     ).exists():
-#         model.objects.create(user=user, recipe=recipe)
-#         serializer = RecipeMiniSerializer(recipe)
-#     else:
-#         return Response(
-#             {'error': 'Рецепт уже добавлен в избранное'},
-#             status=status.HTTP_400_BAD_REQUEST
-#         )
-#     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-# def check_and_delete_object(model, recipe, user):
-#     """Удаляем рецепт из избранного/корзины."""
-#     try:
-#         object = model.objects.get(
-#             user=user,
-#             recipe=recipe
-#         )
-#     except model.DoesNotExist:
-#         return Response(
-#             {'error': 'Рецепт не найден.'},
-#             status=status.HTTP_400_BAD_REQUEST
-#         )
-#     object.delete()
-#     return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# def check_and_create_subscription(model, author, user):
-#     """Создаем подписку."""
-#     if not model.objects.filter(
-#             user=user,
-#             following=author
-#     ).exists():
-#         model.objects.create(user=user, following=author)
-#         serializer = FollowSerializer(author)
-#     else:
-#         return Response(
-#             {'detail': 'Подписка уже существует'},
-#             status=status.HTTP_400_BAD_REQUEST
-#         )
-#     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-# def check_and_delete_subscription(model, author, user):
-#     try:
-#         subscription = model.objects.get(
-#             user=user,
-#             following=author
-#         )
-#     except model.DoesNotExist:
-#         return Response(status=status.HTTP_400_BAD_REQUEST)
-#     subscription.delete()
-#     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -144,7 +78,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
-        paginator = LimitPagination()
+        paginator = CustomPagination()
         result_pages = paginator.paginate_queryset(subscriptions, request)
         serializer = FollowSerializer(
             result_pages,
@@ -205,9 +139,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         new_password = request.data.get('new_password')
         errors = []
         if not user.check_password(current_password):
-            errors.append('Неверный текущий пароль')
+            errors.append('Неверный текущий пароль!')
         if not new_password:
-            errors.append('Новый пароль не предоставлен')
+            errors.append('Новый пароль не указан!')
         if errors:
             return Response(
                 {'errors': errors},
@@ -224,11 +158,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = (AllowAny,)
-    pagination_class = LimitPagination
+    pagination_class = CustomPagination
     filterset_class = RecipeFilter
 
     def get_permissions(self):
-        """Определяем права доступа для разных HTTP методов."""
+        """Определяем права доступа для разных методов."""
         if self.request.method == 'POST':
             self.permission_classes = [IsAuthenticated]
         elif self.request.method == 'PATCH':

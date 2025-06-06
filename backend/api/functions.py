@@ -15,7 +15,7 @@ def check_and_create(model, item, user, item_type='recipe'):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(
-        {'error': f'{item_type} уже добавлен.'},
+        {'error': f'Объект {item_type} уже добавлен.'},
         status=status.HTTP_400_BAD_REQUEST
     )
 
@@ -28,6 +28,6 @@ def check_and_delete(model, item, user, item_type='recipe'):
         return Response(status=status.HTTP_204_NO_CONTENT)
     except model.DoesNotExist:
         return Response(
-            {'error': f'{item_type} не найден.'},
+            {'error': f'Объект {item_type} не найден.'},
             status=status.HTTP_400_BAD_REQUEST
         )
