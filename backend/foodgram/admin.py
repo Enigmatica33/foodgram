@@ -8,14 +8,14 @@ from .models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    fields = ('ingredient', 'amount')
-    autocomplete_fields = ('ingredient',)
+    fields = ['ingredient', 'amount']
+    autocomplete_fields = ['ingredient']
 
 
 class RecipeTagInline(admin.TabularInline):
     model = RecipeTag
-    extra = 1  # Количество пустых форм для добавления новых тегов
-    autocomplete_fields = ('tag',)
+    extra = 1
+    autocomplete_fields = ['tag']
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -48,20 +48,23 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     model = Ingredient
     list_display = ['name', 'measurement_unit']
-    search_fields = ['name', 'measurement_unit']
+    search_fields = ['name']
     actions = ['delete_selected']
 
 
 class FavoriteAdmin(admin.ModelAdmin):
     model = Favorite
+    list_display = ['user', 'recipe']
 
 
 class FollowAdmin(admin.ModelAdmin):
     model = Follow
+    list_display = ['user', 'following']
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):
     model = ShoppingCart
+    list_display = ['user', 'recipe']
 
 
 admin.site.register(Tag, TagAdmin)
