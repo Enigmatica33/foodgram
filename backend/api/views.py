@@ -97,7 +97,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             many=True,
             context=context
         )
-        return paginator.get_paginated_response(serializer.data) 
+        return paginator.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
