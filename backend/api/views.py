@@ -77,9 +77,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
-        paginator = CustomPagination()
+        # paginator = CustomPagination()
         # limit = request.query_params.get('recipes_limit')
-        # context = {'request': request}
+        context = {'request': request}
         # try:
         #     context['recipes_limit_value'] = int(limit)
         # except ValueError:
@@ -88,16 +88,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         #             "должен быть положительным целым числом."},
         #         status=status.HTTP_400_BAD_REQUEST
         #     )
-        result_pages = paginator.paginate_queryset(
+        result_pages = self.paginate_queryset(
             subscriptions,
-            request
+            context
         )
         serializer = FollowSerializer(
             result_pages,
             many=True
             # context=context
         )
-        return paginator.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
