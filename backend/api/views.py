@@ -77,7 +77,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
-        paginator = self.pagination_class
+        paginator = CustomPagination()
         # limit = request.query_params.get('recipes_limit')
         # context = {'request': request}
         # try:
