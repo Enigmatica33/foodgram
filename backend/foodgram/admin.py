@@ -73,6 +73,7 @@ admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(Follow, FollowAdmin)
+admin.site.register(ShoppingCart, ShoppingCartAdmin)
 admin.site.empty_value_display = 'Не задано'
 # admin.site.register(RecipeTag)
 # admin.site.register(RecipeIngredient)
