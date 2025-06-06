@@ -66,9 +66,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/api|admin/.*$'
+CORS_URLS_REGEX = r'^/api/.*$'
 
-CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.com/admin/']
+CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.org']
 
 
 # Database
