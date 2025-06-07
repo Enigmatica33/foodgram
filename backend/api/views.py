@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -27,7 +28,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     """Представление для Пользователя."""
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = CustomPagination
+    pagination_class = LimitOffsetPagination
     http_method_names = ['get', 'post', 'put', 'delete']
     permission_classes = (AllowAny,)
 
@@ -98,7 +99,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             many=True
             # context=context
         )
-        return self.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
     def me(self, request):
