@@ -13,7 +13,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
 
 from .filters import IngredientFilter, RecipeFilter
 from .functions import check_and_create, check_and_delete
-from .pagination import CustomPagination
+from .pagination import CustomPagination, LimitPagination
 from .pdf import pdf_creating
 from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
@@ -77,9 +77,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
+        paginator = LimitPagination()
         # paginator = CustomPagination()
         # limit = request.query_params.get('recipes_limit')
-        context = {'request': request}
+        # context = {'request': request}
         # try:
         #     context['recipes_limit_value'] = int(limit)
         # except ValueError:
@@ -88,9 +89,9 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         #             "должен быть положительным целым числом."},
         #         status=status.HTTP_400_BAD_REQUEST
         #     )
-        result_pages = self.paginate_queryset(
+        result_pages = paginator.paginate_queryset(
             subscriptions,
-            context
+            request
         )
         serializer = FollowSerializer(
             result_pages,
