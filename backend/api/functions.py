@@ -4,15 +4,14 @@ from rest_framework.response import Response
 from .serializers import FollowSerializer, RecipeMiniSerializer
 
 
-def check_and_create(model, item, user, item_type='recipe'):
+def check_and_create(model, item, user, serializer_context=None, item_type='recipe'):
     """Добавляет или создает объект (рецепт или подписку)."""
     if not model.objects.filter(user=user, **{item_type: item}).exists():
         model.objects.create(user=user, **{item_type: item})
         if item_type == 'recipe':
             serializer = RecipeMiniSerializer(item)
         elif item_type == 'following':
-            serializer = FollowSerializer(item)
-
+            serializer = FollowSerializer(item, context=serializer_context)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(
         {'error': f'Объект {item_type} уже добавлен.'},

@@ -63,6 +63,25 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         """Создание подписки."""
         author = get_object_or_404(CustomUser, id=pk)
         user = request.user
+        recipes_limit_str = request.query_params.get('recipes_limit')
+        recipes_limit = None
+        if recipes_limit_str:
+            try:
+                recipes_limit = int(recipes_limit_str)
+                if recipes_limit < 0:
+                    recipes_limit = None
+            except ValueError:
+                recipes_limit = None
+                return Response(
+                    {'errors': 'recipes_limit должен быть целым числом.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        serializer_context = {
+            'request': request,
+            'recipes_limit': recipes_limit
+        }
+        if recipes_limit is not None:
+            serializer_context['recipes_limit'] = recipes_limit
         if request.method == 'POST':
             if user == author:
                 return Response(
@@ -73,6 +92,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 Follow,
                 author,
                 user,
+                serializer_context={
+                    'request': request,
+                    'recipes_limit': recipes_limit
+                },
                 item_type='following'
             )
         if request.method == 'DELETE':
