@@ -411,8 +411,6 @@ class FollowSerializer(serializers.ModelSerializer):
             many=True,
             context=self.context
         ).data
-        # serializer = RecipeMiniSerializer(recipes, many=True, read_only=True)
-        # return serializer.data
 
     @staticmethod
     def get_recipes_count(obj):
