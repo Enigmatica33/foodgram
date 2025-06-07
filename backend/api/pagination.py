@@ -1,5 +1,4 @@
-from rest_framework.pagination import (LimitOffsetPagination,
-                                       PageNumberPagination)
+from rest_framework.pagination import PageNumberPagination
 
 
 class CustomPagination(PageNumberPagination):
@@ -7,10 +6,3 @@ class CustomPagination(PageNumberPagination):
     page_size_query_param = 'limit'  # количество объектов на странице
     page_query_param = 'page'
     max_page_size = 100              # Макс. объектов на странице
-
-
-class LimitPagination(LimitOffsetPagination):
-    """Кастомный пагинатор для вывода элементов на странице."""
-    limit_query_param = 'limit'
-    default_limit = 6
-    max_limit = 100
