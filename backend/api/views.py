@@ -5,7 +5,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
-from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -14,7 +13,7 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
 
 from .filters import IngredientFilter, RecipeFilter
 from .functions import check_and_create, check_and_delete
-from .pagination import CustomPagination, LimitPagination
+from .pagination import CustomPagination
 from .pdf import pdf_creating
 from .permissions import IsAuthor, IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
@@ -28,7 +27,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     """Представление для Пользователя."""
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomPagination
     http_method_names = ['get', 'post', 'put', 'delete']
     permission_classes = (AllowAny,)
 
@@ -78,7 +77,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
         ).order_by('username')
-        paginator = LimitPagination()
+        paginator = CustomPagination()
         # paginator = CustomPagination()
         # limit = request.query_params.get('recipes_limit')
         # context = {'request': request}
