@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from .serializers import FollowSerializer, RecipeMiniSerializer
 
 
-def check_and_create(model, item, user, serializer_context=None, item_type='recipe'):
+def check_and_create(
+        model, item, user, serializer_context=None,
+        item_type='recipe'):
     """Добавляет или создает объект (рецепт или подписку)."""
     if not model.objects.filter(user=user, **{item_type: item}).exists():
         model.objects.create(user=user, **{item_type: item})
