@@ -406,7 +406,11 @@ class FollowSerializer(serializers.ModelSerializer):
         recipes_limit = self.context.get('recipes_limit')
         if recipes_limit:
             recipes = recipes[:recipes_limit]
-        return RecipeMiniSerializer(recipes, many=True, context=self.context).data
+        return RecipeMiniSerializer(
+            recipes,
+            many=True,
+            context=self.context
+        ).data
         # serializer = RecipeMiniSerializer(recipes, many=True, read_only=True)
         # return serializer.data
 

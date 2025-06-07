@@ -46,14 +46,15 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         # Получаем recipes_limit из query_params
         recipes_limit_str = self.request.query_params.get('recipes_limit')
         # Устанавливаем значение по умолчанию, если параметр не передан
-        default_recipes_limit = 3 # Например, 3 рецепта по умолчанию
+        default_recipes_limit = 3
+        # Например, 3 рецепта по умолчанию
         if recipes_limit_str:
             try:
                 recipes_limit = int(recipes_limit_str)
                 # Можно добавить проверку, чтобы recipes_limit
                 # не был слишком большим или отрицательным
                 if recipes_limit <= 0:
-                    recipes_limit = default_recipes_limit  
+                    recipes_limit = default_recipes_limit
                     # Или None, чтобы показать все
             except ValueError:
                 # Если значение не может быть преобразовано в int,
@@ -61,7 +62,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 recipes_limit = default_recipes_limit
         else:
             recipes_limit = default_recipes_limit
-            
         context['recipes_limit'] = recipes_limit
         return context
 
