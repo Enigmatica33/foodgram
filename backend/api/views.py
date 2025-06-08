@@ -4,7 +4,7 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -12,10 +12,10 @@ from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag)
 
 from .filters import IngredientFilter, RecipeFilter
-from .functions import check_and_create, check_and_delete
+from .functions import check_and_create, check_and_delete, get_recipes_limit
 from .pagination import CustomPagination
 from .pdf import pdf_creating
-from .permissions import IsAuthor, IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           CustomUserSerializer, FollowSerializer,
                           IngredientListSerializer, MeSerializer,
@@ -56,32 +56,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['get', 'post', 'delete'],
+        methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, pk=None):
         """Создание подписки."""
         author = get_object_or_404(CustomUser, id=pk)
         user = request.user
-        recipes_limit_str = request.query_params.get('recipes_limit')
-        recipes_limit = None
-        if recipes_limit_str:
-            try:
-                recipes_limit = int(recipes_limit_str)
-                if recipes_limit < 0:
-                    recipes_limit = None
-            except ValueError:
-                recipes_limit = None
-                return Response(
-                    {'errors': 'recipes_limit должен быть целым числом.'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+        try:
+            recipes_limit = get_recipes_limit(request)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         serializer_context = {
             'request': request,
             'recipes_limit': recipes_limit
         }
-        if recipes_limit is not None:
-            serializer_context['recipes_limit'] = recipes_limit
         if request.method == 'POST':
             if user == author:
                 return Response(
@@ -92,13 +81,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
                 Follow,
                 author,
                 user,
-                serializer_context={
-                    'request': request,
-                    'recipes_limit': recipes_limit
-                },
+                serializer_context=serializer_context,
                 item_type='following'
             )
-        if request.method == 'DELETE':
+        elif request.method == 'DELETE':
             return check_and_delete(
                 Follow,
                 author,
@@ -115,15 +101,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         """Просмотр и управление подписками."""
         subscriptions = CustomUser.objects.filter(
             following__user=request.user
-        ).order_by('username')
+        ).prefetch_related('recipes').order_by('username')
         paginator = CustomPagination()
-        recipes_limit_str = request.query_params.get('recipes_limit')
-        recipes_limit = int(recipes_limit_str)
+        try:
+            recipes_limit = get_recipes_limit(request)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         serializer_context = {
             'request': request,
+            'recipes_limit': recipes_limit
         }
-        if recipes_limit is not None:
-            serializer_context['recipes_limit'] = recipes_limit
         result_pages = paginator.paginate_queryset(
             subscriptions,
             request
@@ -295,7 +282,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False,
         url_path='download_shopping_cart',
         url_name='download_shopping_cart',
-        permission_classes=(IsAuthenticated, IsAuthor)
+        permission_classes=(IsAuthenticated,)
     )
     def get_download_shopping_cart(self, request):
         ingredients = RecipeIngredient.objects.filter(
