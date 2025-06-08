@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .views import (CustomUserViewSet, IngredientViewSet, RecipeViewSet,
-                    TagViewSet)
+                    TagViewSet, redirect_from_short_link)
 
 app_name = 'api'
 
@@ -13,6 +13,11 @@ v1_router.register('ingredients', IngredientViewSet, basename='ingredients')
 v1_router.register('users', CustomUserViewSet, basename='users')
 
 urlpatterns = [
+    path(
+        's/<str:recipe_hash>/',
+        redirect_from_short_link,
+        name='shortlink-redirect'
+    ),
     path('', include(v1_router.urls)),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),

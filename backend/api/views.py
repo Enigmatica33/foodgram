@@ -1,7 +1,7 @@
 import hashlib
 
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
@@ -21,6 +21,19 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           TagListSerializer)
+
+
+def redirect_from_short_link(request, recipe_hash):
+    """
+    Находит рецепт по его короткому хешу и перенаправляет
+    на полную страницу рецепта.
+    """
+    recipe = get_object_or_404(Recipe, short_link=recipe_hash)
+    # redirect() может использовать метод get_absolute_url() модели
+    # для определения, куда перенаправлять.
+    return redirect(recipe)
+    # Можно также указать permanent=False для 302 редиректа
+    # return redirect(recipe.get_absolute_url(), permanent=False)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -135,7 +148,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         url_path='avatar',
         permission_classes=(IsAuthenticated,)
     )
-    def update_avatar(self, request, pk=None):
+    def update_avatar(self, request):
         """Добавление/удаление аватара."""
         user = request.user
         if request.method == 'PUT':
@@ -164,7 +177,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         url_name='set_password',
         permission_classes=(IsAuthenticated,)
     )
-    def set_password(self, request, pk=None):
+    def set_password(self, request):
         user = request.user
         if user is None:
             return Response(

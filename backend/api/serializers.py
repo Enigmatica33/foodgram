@@ -147,13 +147,6 @@ class TagListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class IngredientSerializer(serializers.ModelSerializer):
-    """Сериализатор для Ингредиентов."""
-    class Meta:
-        model = Ingredient
-        fields = ('id',)
-
-
 class IngredientListSerializer(serializers.ModelSerializer):
     """Сериализатор для списка Ингредиентов."""
     class Meta:
@@ -169,13 +162,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = ('id', 'amount')
-
-
-class RecipeTagSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели RecipeTag."""
-    class Meta:
-        model = RecipeTag
-        fields = '__all__'
 
 
 class RecipeMiniSerializer(serializers.ModelSerializer):
@@ -241,11 +227,11 @@ class RecipeSerializer(serializers.ModelSerializer):
                 Tag.objects.get(pk=tag_id)
             except ObjectDoesNotExist:
                 raise serializers.ValidationError(
-                    f'Ингредиент c ID {tag_id} не существует.'
+                    f'Тег c ID {tag_id} не существует.'
                 )
             if tag_id in tag_ids:
                 raise serializers.ValidationError(
-                    f'Ингредиент c ID {tag_id} уже указан.'
+                    f'Тег c ID {tag_id} уже указан.'
                 )
             tag_ids.add(tag_id)
         return data

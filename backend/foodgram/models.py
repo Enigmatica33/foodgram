@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+from django.urls import reverse
 
 from .constants import (MAX_EMAIL, MAX_INGREDIENTS, MAX_MEASUREMENT_UNIT,
                         MAX_RECIPE_NAME, MAX_TAG, MAX_USER)
@@ -118,6 +119,7 @@ class Recipe(models.Model):
     )
     short_link = models.CharField(
         max_length=50,
+        unique=True,
         blank=True,
         null=True,
         verbose_name='Короткая ссылка на рецепт'
@@ -134,6 +136,16 @@ class Recipe(models.Model):
 
     def __str__(self):
         return f'Рецепт {self.name} от пользователя {self.author}'
+
+    def get_absolute_url(self):
+        """
+        Возвращает URL для отображения конкретного экземпляра рецепта.
+        Очень важно, чтобы 'recipe-detail' было именем URL-шаблона
+        вашего детального представления рецепта (обычно это стандартное имя
+        для ViewSet'ов в DRF). Если у вас другое имя или неймспейс,
+        укажите его здесь. Например, 'api:recipe-detail'.
+        """
+        return reverse('recipe-detail', kwargs={'pk': self.pk})
 
 
 class RecipeTag(models.Model):
