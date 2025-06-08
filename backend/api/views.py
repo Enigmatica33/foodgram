@@ -24,16 +24,8 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 
 def redirect_from_short_link(request, recipe_hash):
-    """
-    Находит рецепт по его короткому хешу и перенаправляет
-    на полную страницу рецепта.
-    """
     recipe = get_object_or_404(Recipe, short_link=recipe_hash)
-    # redirect() может использовать метод get_absolute_url() модели
-    # для определения, куда перенаправлять.
     return redirect(recipe)
-    # Можно также указать permanent=False для 302 редиректа
-    # return redirect(recipe.get_absolute_url(), permanent=False)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

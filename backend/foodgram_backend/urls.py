@@ -1,17 +1,17 @@
-# from api import views
+from api.views import redirect_from_short_link
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    # path(
-    #     's/<str:short_link>',
-    #     views.redirect_short_link,
-    #     name='redirect_short_link'
-    # ),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
+    path(
+        's/<str:recipe_hash>/',
+        redirect_from_short_link,
+        name='short_link_redirect'
+    ),
 ]
 
 if settings.DEBUG:
