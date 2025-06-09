@@ -94,7 +94,7 @@
 - ```api/recipes/{id}/shopping_cart/``` - добавление рецепта с соответствующим
      id в список покупок и удаление из списка (GET, DELETE);
 - ```api/recipes/download_shopping_cart/``` - скачать файл со списком покупок
-     shopping_cart.txt (GET);
+     в формате .pdf (GET);
 - ```api/recipes/{id}/favorite/``` - добавление рецепта с соответствующим id в
      список избранного и его удаление (GET, DELETE).
 

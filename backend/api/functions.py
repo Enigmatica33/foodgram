@@ -42,6 +42,7 @@ def check_and_delete(model, item, user, item_type='recipe'):
 
 
 def get_recipes_limit(request):
+    """Получает параметр recipes_limit из запроса."""
     recipes_limit_str = request.query_params.get('recipes_limit')
     if recipes_limit_str:
         try:
