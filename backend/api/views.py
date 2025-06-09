@@ -236,7 +236,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             raise NotFound('Рецепт не найден!')
         full_url = f'{request.scheme}://{request.get_host()}'
         recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
-        short_link = f'{full_url}/s/{recipe_hash}'
+        short_link = f'{full_url}/s/{recipe_hash}/'
         recipe.short_link = recipe_hash
         recipe.save()
         return Response({'short-link': short_link})
