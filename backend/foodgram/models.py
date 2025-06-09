@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-from django.urls import reverse
 
 from .constants import (MAX_EMAIL, MAX_INGREDIENTS, MAX_MEASUREMENT_UNIT,
                         MAX_RECIPE_NAME, MAX_TAG, MAX_USER)
