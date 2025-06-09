@@ -91,6 +91,7 @@
      (GET, POST);
 - ```api/recipes/{id}``` - получение, изменение, удаление рецепта с
      соответствующим id (GET, PUT, PATCH, DELETE);
+- ```api/recipes/{id}/get-link``` - получение короткой ссылки на рецепт
 - ```api/recipes/{id}/shopping_cart/``` - добавление рецепта с соответствующим
      id в список покупок и удаление из списка (GET, DELETE);
 - ```api/recipes/download_shopping_cart/``` - скачать файл со списком покупок
