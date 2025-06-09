@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-z*ubgq#rrhnrpj&(3%*xax6a_n&b&6)#%1i=d2lzbx+%-5clov
 DEBUG = True
 
 ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'backend', 'foodgram.myftp.org']
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
