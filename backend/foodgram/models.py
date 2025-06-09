@@ -11,8 +11,6 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, max_length=MAX_EMAIL)
     username = models.CharField(
         max_length=MAX_USER,
-        # blank=False,
-        # null=False,
         unique=True,
         validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), validate_name]
     )
@@ -138,7 +136,6 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return f'/recipes/{self.pk}/'
-        # return reverse('api:recipes-detail', kwargs={'pk': self.pk})
 
 
 class RecipeTag(models.Model):

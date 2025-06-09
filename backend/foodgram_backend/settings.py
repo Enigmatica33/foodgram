@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+from django.core.management.utils import get_random_secret_key
+from dotenv import load_dotenv
+
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,12 +13,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z*ubgq#rrhnrpj&(3%*xax6a_n&b&6)#%1i=d2lzbx+%-5clov'
+# SECRET_KEY = 'django-insecure-z*ubgq#rrhnrpj&(3%*xax6a_n&b&6)#%1i=d2lzbx+%-5clov'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'backend', 'foodgram.myftp.org']
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
+
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['84.201.162.94,127.0.0.1,localhost,foodgram.myftp.org']).split(',')
+# ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'backend', 'foodgram.myftp.org']
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
