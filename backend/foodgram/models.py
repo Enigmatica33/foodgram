@@ -138,14 +138,7 @@ class Recipe(models.Model):
         return f'Рецепт {self.name} от пользователя {self.author}'
 
     def get_absolute_url(self):
-        """
-        Возвращает URL для отображения конкретного экземпляра рецепта.
-        Очень важно, чтобы 'recipe-detail' было именем URL-шаблона
-        вашего детального представления рецепта (обычно это стандартное имя
-        для ViewSet'ов в DRF). Если у вас другое имя или неймспейс,
-        укажите его здесь. Например, 'api:recipe-detail'.
-        """
-        return reverse('recipes-detail', kwargs={'pk': self.pk})
+        return reverse('api:recipes-detail', kwargs={'pk': self.pk})
 
 
 class RecipeTag(models.Model):
