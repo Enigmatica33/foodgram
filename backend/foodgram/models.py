@@ -138,7 +138,8 @@ class Recipe(models.Model):
         return f'Рецепт {self.name} от пользователя {self.author}'
 
     def get_absolute_url(self):
-        return reverse('api:recipes-detail', kwargs={'pk': self.pk})
+        return f'/recipes/{self.pk}/'
+        # return reverse('api:recipes-detail', kwargs={'pk': self.pk})
 
 
 class RecipeTag(models.Model):
