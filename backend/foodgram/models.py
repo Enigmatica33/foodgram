@@ -145,7 +145,7 @@ class Recipe(models.Model):
         для ViewSet'ов в DRF). Если у вас другое имя или неймспейс,
         укажите его здесь. Например, 'api:recipe-detail'.
         """
-        return reverse('recipe-detail', kwargs={'pk': self.pk})
+        return reverse('recipes-detail', kwargs={'pk': self.pk})
 
 
 class RecipeTag(models.Model):
