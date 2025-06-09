@@ -21,7 +21,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = (os.getenv('DEBUG', 'False') == 'True')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['84.201.162.94,127.0.0.1,localhost,foodgram.myftp.org']).split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '84.201.162.94,127.0.0.1,localhost,foodgram.myftp.org').split(',')
 # ALLOWED_HOSTS = ['84.201.162.94', '127.0.0.1', 'localhost', 'backend', 'foodgram.myftp.org']
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
