@@ -8,8 +8,9 @@ from foodgram.constants import (ERROR_MESSAGE_CHECK_LENGTH,
                                 ERROR_MESSAGE_DOUBLE_EMAIL,
                                 ERROR_MESSAGE_DOUBLE_USERNAME,
                                 ERROR_MESSAGE_REGEX, MAX_USER)
-from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
-                             RecipeIngredient, RecipeTag, ShoppingCart, Tag)
+from foodgram.models import (Favorite, Follow, Ingredient, Recipe,
+                             RecipeIngredient, RecipeTags, ShoppingCart, Tag,
+                             User)
 
 from .fields import Base64ImageField
 
@@ -32,7 +33,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     )
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'email',
             'id',
@@ -53,7 +54,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 message=ERROR_MESSAGE_CHECK_LENGTH
             ),
             UniqueValidator(
-                queryset=CustomUser.objects.all(),
+                queryset=User.objects.all(),
                 message=ERROR_MESSAGE_DOUBLE_USERNAME
             )
         ],
@@ -67,7 +68,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validators=[
             EmailValidator,
             UniqueValidator(
-                queryset=CustomUser.objects.all(),
+                queryset=User.objects.all(),
                 message=ERROR_MESSAGE_DOUBLE_EMAIL
             )
         ]
@@ -77,7 +78,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     avatar = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'email',
             'id',
@@ -101,7 +102,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         email = validated_data.pop('email')
         username = validated_data.pop('username')
         password = validated_data.pop('password')
-        user = CustomUser(email=email, username=username)
+        user = User(email=email, username=username)
         user.set_password(password)
         user.save()
         return user
@@ -110,7 +111,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class MeSerializer(serializers.ModelSerializer):
     """Сериализатор Me."""
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'email',
             'id',
@@ -127,7 +128,7 @@ class AvatarSerializer(serializers.ModelSerializer):
     avatar = Base64ImageField(allow_null=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('avatar',)
 
 
@@ -313,7 +314,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
     def get_tags(self, obj):
-        recipe_tags = RecipeTag.objects.filter(recipe=obj)
+        recipe_tags = RecipeTags.objects.filter(recipe=obj)
         return [
             {
                 'id': rt.tag.id,
@@ -357,7 +358,7 @@ class FollowSerializer(serializers.ModelSerializer):
     recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = (
             'email',
             'id',

@@ -1,8 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 
-from .models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
-                     RecipeIngredient, RecipeTag, ShoppingCart, Tag)
+from .models import (Favorite, Follow, Ingredient, Recipe, RecipeIngredient,
+                     ShoppingCart, Tag)
+
+User = get_user_model()
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -12,10 +16,10 @@ class RecipeIngredientInline(admin.TabularInline):
     autocomplete_fields = ['ingredient']
 
 
-class RecipeTagInline(admin.TabularInline):
-    model = RecipeTag
-    extra = 1
-    autocomplete_fields = ['tag']
+# class RecipeTagInline(admin.TabularInline):
+#     model = RecipeTag
+#     extra = 1
+#     autocomplete_fields = ['tag']
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -24,15 +28,23 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ['tags']
     search_fields = ['author__username', 'name']
     actions = ['delete_selected']
-    inlines = (RecipeIngredientInline, RecipeTagInline)
+    inlines = (RecipeIngredientInline,)
+    #    , RecipeTagInline)
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(favorites_count=Count('recipe_favorite'))
+        return queryset
+
+    @admin.display(
+        description='Количество добавлений в избранное'
+    )
     def favorites_count(self, obj):
-        return obj.recipe_favorite.count()
-    favorites_count.short_description = 'Количество добавлений в избранное'
+        return obj.favorites_count
 
 
-class CustomUserAdmin(UserAdmin):
-    model = CustomUser
+class UserAdmin(UserAdmin):
+    model = User
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {'fields': ('email', 'username', 'first_name', 'last_name')}),
     )
@@ -70,10 +82,8 @@ class ShoppingCartAdmin(admin.ModelAdmin):
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(User, UserAdmin)
 admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(Follow, FollowAdmin)
 admin.site.register(ShoppingCart, ShoppingCartAdmin)
 admin.site.empty_value_display = 'Не задано'
-# admin.site.register(RecipeTag)
-# admin.site.register(RecipeIngredient)

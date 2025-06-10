@@ -89,7 +89,7 @@ else:
     raise ValueError(f"Неизвестное значение для DATABASE_CHOICE: {DATABASE_CHOICE}. "
                      "Допустимые значения: 'postgres', 'sqlite'.")
 
-AUTH_USER_MODEL = 'foodgram.CustomUser'
+AUTH_USER_MODEL = 'foodgram.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

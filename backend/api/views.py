@@ -8,8 +8,8 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from foodgram.models import (CustomUser, Favorite, Follow, Ingredient, Recipe,
-                             RecipeIngredient, ShoppingCart, Tag)
+from foodgram.models import (Favorite, Follow, Ingredient, Recipe,
+                             RecipeIngredient, ShoppingCart, Tag, User)
 
 from .filters import IngredientFilter, RecipeFilter
 from .functions import check_and_create, check_and_delete, get_recipes_limit
@@ -25,7 +25,7 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     """Представление для Пользователя."""
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
     http_method_names = ['get', 'post', 'put', 'delete']
@@ -61,7 +61,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def subscribe(self, request, pk=None):
         """Создание подписки."""
-        author = get_object_or_404(CustomUser, id=pk)
+        author = get_object_or_404(User, id=pk)
         user = request.user
         try:
             recipes_limit = get_recipes_limit(request)
@@ -99,7 +99,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     )
     def subscriptions(self, request):
         """Просмотр и управление подписками."""
-        subscriptions = CustomUser.objects.filter(
+        subscriptions = User.objects.filter(
             following__user=request.user
         ).prefetch_related('recipes').order_by('username')
         paginator = CustomPagination()
@@ -286,7 +286,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def get_download_shopping_cart(self, request):
         ingredients = RecipeIngredient.objects.filter(
-            recipe__recipe_shopping__user=request.user
+            recipe__recipe_shoppingcart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'

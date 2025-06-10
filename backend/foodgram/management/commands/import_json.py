@@ -47,8 +47,8 @@ class Command(BaseCommand):
                     'для добавления после обработки JSON.'))
             return
         try:
-            created_ingredients = Ingredient.objects.bulk_create(
-                ingredients_to_create, 
+            Ingredient.objects.bulk_create(
+                ingredients_to_create,
                 ignore_conflicts=True
             )
             self.stdout.write(
