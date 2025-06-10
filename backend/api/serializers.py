@@ -9,8 +9,7 @@ from foodgram.constants import (ERROR_MESSAGE_CHECK_LENGTH,
                                 ERROR_MESSAGE_DOUBLE_USERNAME,
                                 ERROR_MESSAGE_REGEX, MAX_USER)
 from foodgram.models import (Favorite, Follow, Ingredient, Recipe,
-                             RecipeIngredient, RecipeTags, ShoppingCart, Tag,
-                             User)
+                             RecipeIngredient, ShoppingCart, Tag, User)
 
 from .fields import Base64ImageField
 
@@ -314,15 +313,11 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
     def get_tags(self, obj):
-        recipe_tags = RecipeTags.objects.filter(recipe=obj)
+        recipe_tags = obj.tags.all()
         return [
-            {
-                'id': rt.tag.id,
-                'name': rt.tag.name,
-                'slug': rt.tag.slug
-            }
-            for rt in recipe_tags
-        ]
+            {'id': tag.id,
+             'name': tag.name,
+             'slug': tag.slug} for tag in recipe_tags]
 
     def get_ingredients(self, obj):
         """Возвращает список ингредиентов с количеством для данного рецепта."""
