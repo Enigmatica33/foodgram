@@ -1,7 +1,7 @@
 import hashlib
 
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
@@ -21,12 +21,6 @@ from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeReadSerializer, RecipeSerializer,
                           TagListSerializer)
-
-
-def redirect_from_short_link(request, recipe_hash):
-    """Редирект короткой ссылки на страницу рецепта."""
-    recipe = get_object_or_404(Recipe, short_link=recipe_hash)
-    return redirect(recipe)
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
