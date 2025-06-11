@@ -67,13 +67,6 @@ CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.org']
 
 DATABASE_CHOICE = os.getenv('DATABASE_CHOICE', 'sqlite').lower()
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 if DATABASE_CHOICE == 'postgres':
     DATABASES = {
         'default': {
@@ -149,10 +142,6 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'SERIALIZERS': {
-        'user': 'api.serializers.UserSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-    },
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
         'user': ['rest_framework.permissions.AllowAny'],

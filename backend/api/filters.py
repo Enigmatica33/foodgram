@@ -17,9 +17,6 @@ class IngredientFilter(filters.FilterSet):
 
 class RecipeFilter(filters.FilterSet):
     """Фильтр для поиска рецепта по автору."""
-    author = filters.NumberFilter(
-        field_name='author',
-    )
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
