@@ -2,6 +2,7 @@ import hashlib
 
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound, ValidationError
@@ -13,30 +14,22 @@ from foodgram.models import (Favorite, Follow, Ingredient, Recipe,
 
 from .filters import IngredientFilter, RecipeFilter
 from .functions import check_and_create, check_and_delete, get_recipes_limit
-from .pagination import CustomPagination
+from .pagination import Pagination
 from .pdf import pdf_creating
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (AvatarSerializer, CustomUserCreateSerializer,
-                          CustomUserSerializer, FollowSerializer,
+from .serializers import (AvatarSerializer, FollowSerializer,
                           IngredientListSerializer, MeSerializer,
                           RecipeReadSerializer, RecipeSerializer,
-                          TagListSerializer)
+                          TagListSerializer, UserSerializer)
 
 
-class CustomUserViewSet(viewsets.ModelViewSet):
+class UserViewSet(UserViewSet):
     """Представление для Пользователя."""
     queryset = User.objects.all()
-    serializer_class = CustomUserSerializer
-    pagination_class = CustomPagination
+    serializer_class = UserSerializer
+    pagination_class = Pagination
     http_method_names = ['get', 'post', 'put', 'delete']
     permission_classes = (AllowAny,)
-
-    def create(self, request):
-        serializer = CustomUserCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_serializer_context(self):
         """Добавляем recipes_limit в контекст сериализатора."""
@@ -102,7 +95,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
         subscriptions = User.objects.filter(
             following__user=request.user
         ).prefetch_related('recipes').order_by('username')
-        paginator = CustomPagination()
+        paginator = Pagination()
         try:
             recipes_limit = get_recipes_limit(request)
         except ValidationError as e:
@@ -157,36 +150,6 @@ class CustomUserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(
-        detail=False,
-        methods=['post'],
-        url_path='set_password',
-        url_name='set_password',
-        permission_classes=(IsAuthenticated,)
-    )
-    def set_password(self, request):
-        user = request.user
-        if user is None:
-            return Response(
-                {'error': 'Пользователь не найден'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        current_password = request.data.get('current_password')
-        new_password = request.data.get('new_password')
-        errors = []
-        if not user.check_password(current_password):
-            errors.append('Неверный текущий пароль!')
-        if not new_password:
-            errors.append('Новый пароль не указан!')
-        if errors:
-            return Response(
-                {'errors': errors},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        user.set_password(new_password)
-        user.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Представление для Рецептов."""
@@ -194,7 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     permission_classes = (AllowAny,)
-    pagination_class = CustomPagination
+    pagination_class = Pagination
     filterset_class = RecipeFilter
 
     def get_permissions(self):
@@ -211,10 +174,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         elif self.request.method == 'DELETE':
             self.permission_classes = [IsAuthorOrReadOnly]
         return super().get_permissions()
-
-    def perform_create(self, serializer):
-        """Авторизованный пользователь создает пост."""
-        serializer.save(author=self.request.user)
 
     def get_serializer_class(self):
         """Определяем тип Сериализатора."""
