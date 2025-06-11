@@ -118,7 +118,7 @@ class UserViewSet(UserViewSet):
     def me(self, request):
         """Управление персональными данными пользователя."""
         user = request.user
-        serializer = MeSerializer(user)
+        serializer = UserSerializer(user)
         return Response(serializer.data)
 
     @action(
