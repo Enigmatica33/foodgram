@@ -18,9 +18,8 @@ from .pagination import Pagination
 from .pdf import pdf_creating
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (AvatarSerializer, FollowSerializer,
-                          IngredientListSerializer, MeSerializer,
-                          RecipeReadSerializer, RecipeSerializer,
-                          TagListSerializer, UserSerializer)
+                          IngredientListSerializer, RecipeReadSerializer,
+                          RecipeSerializer, TagListSerializer, UserSerializer)
 
 
 class UserViewSet(UserViewSet):
