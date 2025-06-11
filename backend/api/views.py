@@ -46,6 +46,18 @@ class UserViewSet(UserViewSet):
         context['recipes_limit'] = recipes_limit
         return context
 
+    @action(detail=False, methods=['get', 'patch'],
+            permission_classes=[IsAuthenticated])
+    def me(self, request):
+        user = request.user
+        if request.method == 'GET':
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
     @action(
         detail=True,
         methods=['post', 'delete'],
