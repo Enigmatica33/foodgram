@@ -5,14 +5,11 @@ from foodgram.models import Ingredient, Recipe, Tag
 
 class IngredientFilter(filters.FilterSet):
     """Фильтр для поиска ингредиента по названию."""
-    name = filters.CharFilter(field_name='name', method='filter_by_name')
+    name = filters.CharFilter(field_name='name', lookup_expr='istartswith')
 
     class Meta:
         model = Ingredient
         fields = ['name']
-
-    def filter_by_name(self, queryset, name, value):
-        return queryset.filter(name__istartswith=value)
 
 
 class RecipeFilter(filters.FilterSet):

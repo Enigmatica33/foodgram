@@ -118,7 +118,7 @@ class UserViewSet(UserViewSet):
         detail=False,
         url_name='me',
         url_path='me',
-        methods=['get', 'patch'],
+        methods=['get'],
         permission_classes=(IsAuthenticated,)
     )
     def me(self, request):
