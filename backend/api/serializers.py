@@ -1,12 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import EmailValidator, MaxLengthValidator
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
+from rest_framework.validators import UniqueTogetherValidator
 
-from foodgram.constants import (ERROR_MESSAGE_CHECK_LENGTH,
-                                ERROR_MESSAGE_DOUBLE_EMAIL,
-                                ERROR_MESSAGE_DOUBLE_USERNAME,
-                                ERROR_MESSAGE_REGEX, MAX_USER)
 from foodgram.models import (Favorite, Follow, Ingredient, Recipe,
                              RecipeIngredient, ShoppingCart, Tag, User)
 
@@ -47,6 +42,13 @@ class AvatarSerializer(serializers.ModelSerializer):
         model = User
         fields = ('avatar',)
 
+    def validate_avatar(self, value):
+        if value is None:
+            raise serializers.ValidationError(
+                'Поле аватар не должно быть пустым'
+            )
+        return value
+
 
 class TagSerializer(serializers.ModelSerializer):
     """Сериализатор для Тегов в рецепте."""
@@ -73,7 +75,14 @@ class IngredientListSerializer(serializers.ModelSerializer):
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для модели RecipeIngredient."""
-    id = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        many=True
+    )
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = RecipeIngredient
@@ -121,7 +130,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         tag_ids = set()
         for ingredients in data['ingredients']:
             ingredient_id = ingredients['id']
-            amount = ingredients['amount']
             if ingredient_id in ingredient_ids:
                 raise serializers.ValidationError(
                     f'Ингредиент c ID {ingredient_id} уже указан.'
@@ -192,8 +200,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор для рецептов на чтение."""
-    tags = serializers.SerializerMethodField()
-    ingredients = serializers.SerializerMethodField()
+    tags = TagSerializer()
+    ingredients = RecipeIngredientSerializer(
+        source='recipeingredient',
+        many=True
+    )
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
