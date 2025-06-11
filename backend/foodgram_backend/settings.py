@@ -28,13 +28,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    # 'corsheaders'
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -62,10 +62,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
-# CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.org']
+CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.org']
 
 DATABASE_CHOICE = os.getenv('DATABASE_CHOICE', 'sqlite').lower()
 
