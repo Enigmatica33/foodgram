@@ -119,7 +119,7 @@ class UserViewSet(UserViewSet):
         url_name='me',
         url_path='me',
         methods=['get', 'patch'],
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(AllowAny,)
     )
     def me(self, request):
         """Управление персональными данными пользователя."""
