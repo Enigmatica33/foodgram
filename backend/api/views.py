@@ -1,11 +1,11 @@
 import hashlib
 
-from django.db.models import BooleanField, Exists, Prefetch, OuterRef, Sum, Value
+from django.db.models import Exists, OuterRef, Sum, Value
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
@@ -49,9 +49,9 @@ class UserViewSet(UserViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         instance, created = Follow.objects.get_or_create(
-                user=user,
-                following=author
-            )
+            user=user,
+            following=author
+        )
         if created:
             serializer = FollowSerializer(author, context=serializer_context)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
