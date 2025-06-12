@@ -140,6 +140,11 @@ class Recipe(models.Model):
     def __str__(self):
         return f'Рецепт {self.name} от пользователя {self.author}'
 
+    def save(self, *args, **kwargs):
+        if not self.short_link:
+            self.short_link = self.generate_short_link()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return f'/recipes/{self.pk}/'
 
