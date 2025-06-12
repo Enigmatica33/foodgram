@@ -2,41 +2,33 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from .serializers import FollowSerializer, RecipeMiniSerializer
+from .serializers import RecipeMiniSerializer
 
 
-def check_and_create(model, item, user, serializer_context=None,
-                     item_type='recipe'):
-    """Добавляет или создает объект (рецепт или подписку)."""
-    if not model.objects.filter(user=user, **{item_type: item}).exists():
-        model.objects.create(user=user, **{item_type: item})
-        if item_type == 'recipe':
-            serializer = RecipeMiniSerializer(item)
-        elif item_type == 'following':
-            serializer = FollowSerializer(item, context=serializer_context)
-        if serializer:
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                {'error':
-                 f'Неизвестный item_type: {item_type} для сериализации.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-    return Response(
-        {'error': f'Объект {item_type} уже добавлен.'},
-        status=status.HTTP_400_BAD_REQUEST
+def create_favorite_cart(model, recipe, user):
+    """Добавляет рецепт в избранное/корзину."""
+    instance, created = model.objects.get_or_create(
+        user=user,
+        recipe=recipe
     )
-
-
-def check_and_delete(model, item, user, item_type='recipe'):
-    """Удаляет объект (рецепт или подписку)."""
-    try:
-        obj_to_delete = model.objects.get(user=user, **{item_type: item})
-        obj_to_delete.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    except model.DoesNotExist:
+    if created:
+        serializer = RecipeMiniSerializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
         return Response(
-            {'error': f'Объект {item_type} не найден.'},
+            {'error': 'Рецепт уже добавлен в избранное'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+def delete_from_favorite_cart(model, recipe, user):
+    """Удаляет рецепт из избранного/корзины."""
+    deleted_count, _ = model.objects.filter(user=user, recipe=recipe).delete()
+    if deleted_count > 0:
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(
+            {'error': f'Рецепт {recipe} не найден.'},
             status=status.HTTP_400_BAD_REQUEST
         )
 
