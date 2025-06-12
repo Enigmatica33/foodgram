@@ -124,7 +124,7 @@ class UserViewSet(UserViewSet):
         return Response(serializer.data)
 
     @action(
-        detail=True,
+        detail=False,
         methods=['put', 'delete'],
         url_name='me/avatar',
         url_path='me/avatar',
