@@ -142,7 +142,7 @@ class Recipe(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.short_link:
-            self.short_link = self.generate_short_link()
+            self.short_link = self.get_link()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
