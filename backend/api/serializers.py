@@ -28,11 +28,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Определяем значение поля is_subscribed для отображения."""
         request = self.context.get('request')
-        if request and request.user.is_authenticated and Follow.objects.filter(
-            user=request.user, following=obj
-        ).exists():
-            return True
-        return False
+        True (request and request.user.is_authenticated
+              and Follow.objects.filter(
+                  user=request.user,
+                  following=obj).exists())
 
 
 class AvatarSerializer(serializers.ModelSerializer):
@@ -88,7 +87,7 @@ class RecipeMiniSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания рецептов."""
+    """Сериализатор для записи рецептов."""
     ingredients = RecipeIngredientSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -113,7 +112,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         if not data.get('ingredients'):
             raise serializers.ValidationError('Укажите ингредиенты.')
         ingredient_ids = set()
-        print(ingredient_ids)
         for ingredients in data['ingredients']:
             ingredient_id = ingredients['id']
             if ingredient_id in ingredient_ids:
@@ -212,11 +210,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
 
 
-class FollowSerializer(serializers.ModelSerializer):
+class FollowSerializer(UserSerializer):
     """Сериализатор для Подписок."""
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
-    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -232,22 +229,6 @@ class FollowSerializer(serializers.ModelSerializer):
             'avatar'
         )
         read_only_fields = ('email', 'username')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Follow.objects.all(),
-                fields=('user', 'following')
-            )
-        ]
-
-    def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        if request:
-            return Follow.objects.filter(
-                user=request.user,
-                following=obj
-            ).exists()
-        else:
-            return False
 
     def get_recipes(self, obj):
         recipes = obj.recipes.all()

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.db.models import Count
 
 from .models import (Favorite, Follow, Ingredient, Recipe, RecipeIngredient,
@@ -16,12 +16,6 @@ class RecipeIngredientInline(admin.TabularInline):
     autocomplete_fields = ['ingredient']
 
 
-# class RecipeTagInline(admin.TabularInline):
-#     model = RecipeTag
-#     extra = 1
-#     autocomplete_fields = ['tag']
-
-
 class RecipeAdmin(admin.ModelAdmin):
     model = Recipe
     list_display = ['author', 'name', 'favorites_count']
@@ -29,7 +23,6 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ['author__username', 'name']
     actions = ['delete_selected']
     inlines = (RecipeIngredientInline,)
-    #    , RecipeTagInline)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -43,9 +36,9 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorites_count
 
 
-class UserAdmin(UserAdmin):
+class UserAdmin(BaseUserAdmin):
     model = User
-    add_fieldsets = UserAdmin.add_fieldsets + (
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
         (None, {'fields': ('email', 'username', 'first_name', 'last_name')}),
     )
     search_fields = ['email', 'username']

@@ -24,15 +24,15 @@ class RecipeFilter(filters.FilterSet):
         method='is_in_shopping_cart_method'
     )
 
-    def is_favorited_method(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(recipe_favorite__user=self.request.user)
-        return queryset
+    # def is_favorited_method(self, queryset, name, value):
+    #     if value and self.request.user.is_authenticated:
+    #         return queryset.filter(recipe_favorite__user=self.request.user)
+    #     return queryset
 
-    def is_in_shopping_cart_method(self, queryset, name, value):
-        if value and self.request.user.is_authenticated:
-            return queryset.filter(recipe_shoppingcart__user=self.request.user)
-        return queryset
+    # def is_in_shopping_cart_method(self, queryset, name, value):
+    #     if value and self.request.user.is_authenticated:
+    #         return queryset.filter(recipe_shoppingcart__user=self.request.user)
+    #     return queryset
 
     class Meta:
         model = Recipe

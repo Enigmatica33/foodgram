@@ -46,18 +46,17 @@ class UserViewSet(UserViewSet):
                 {'error': 'Нельзя подписываться на самого себя!'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        instance, created = Follow.objects.get_or_create(
+        _, created = Follow.objects.get_or_create(
             user=user,
             following=author
         )
         if created:
             serializer = FollowSerializer(author, context=serializer_context)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                {'detail': 'Подписка уже существует'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return Response(
+            {'detail': 'Подписка уже существует'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, id=None):
@@ -77,11 +76,10 @@ class UserViewSet(UserViewSet):
         ).delete()
         if deleted_count > 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(
-                {'error': f'Подписка на автора {author} не найдена.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return Response(
+            {'error': f'Подписка на автора {author} не найдена.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,
@@ -149,11 +147,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-    permission_classes = (
-        AllowAny,
-        IsAuthenticatedOrReadOnly,
-        IsAuthorOrReadOnly
-    )
+    permission_classes = (IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
     pagination_class = Pagination
     filterset_class = RecipeFilter
 

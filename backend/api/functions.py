@@ -14,11 +14,10 @@ def create_favorite_cart(model, recipe, user):
     if created:
         serializer = RecipeMiniSerializer(recipe)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(
-            {'error': 'Рецепт уже добавлен в избранное'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    return Response(
+        {'error': 'Рецепт уже добавлен в избранное'},
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 def delete_from_favorite_cart(model, recipe, user):
@@ -26,11 +25,10 @@ def delete_from_favorite_cart(model, recipe, user):
     deleted_count, _ = model.objects.filter(user=user, recipe=recipe).delete()
     if deleted_count > 0:
         return Response(status=status.HTTP_204_NO_CONTENT)
-    else:
-        return Response(
-            {'error': f'Рецепт {recipe} не найден.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+    return Response(
+        {'error': f'Рецепт {recipe} не найден.'},
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 def get_recipes_limit(request):

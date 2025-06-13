@@ -8,7 +8,6 @@ from django.db import models
 from .constants import (MAX_AMOUNT, MAX_EMAIL, MAX_INGREDIENTS,
                         MAX_MEASUREMENT_UNIT, MAX_RECIPE_NAME, MAX_TAG_NAME,
                         MAX_TAG_SLUG, MAX_TIME, MAX_USER, MIN_AMOUNT, MIN_TIME)
-from .validators import validate_name
 
 
 class User(AbstractUser):
@@ -20,11 +19,9 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         max_length=MAX_USER,
-        validators=[validate_name]
     )
     last_name = models.CharField(
         max_length=MAX_USER,
-        validators=[validate_name]
     )
     avatar = models.ImageField(
         upload_to='foodgram/images/',
@@ -103,7 +100,6 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Описание рецепта')
     tags = models.ManyToManyField(
         Tag,
-        # through='RecipeTag',
         verbose_name='Теги'
     )
     ingredients = models.ManyToManyField(
@@ -120,7 +116,8 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(MIN_TIME), MaxValueValidator(MAX_TIME)],
         verbose_name='Время приготовления (мин.)',
-        help_text='время приготовления не должно быть меньше 1 минуты'
+        help_text='время приготовления не должно быть '
+        f'меньше {MIN_TIME} минуты'
     )
     short_link = models.CharField(
         max_length=50,
@@ -241,6 +238,12 @@ class UserRecipeBase(models.Model):
     class Meta:
         abstract = True
         ordering = ('recipe',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='%(app_label)s_%(class)s_user_recipe_unique'
+            )
+        ]
 
 
 class ShoppingCart(UserRecipeBase):
