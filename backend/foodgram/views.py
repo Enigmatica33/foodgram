@@ -12,6 +12,6 @@ def redirect_from_short_link(request, recipe_hash):
         return redirect(recipe)
     except Recipe.DoesNotExist:
         return Response(
-            {'error': f'Рецепт {recipe} не найден.'},
+            {'error': 'Рецепт не найден.'},
             status=status.HTTP_404_NOT_FOUND
         )
