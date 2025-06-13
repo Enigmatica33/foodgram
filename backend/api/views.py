@@ -1,5 +1,3 @@
-import hashlib
-
 from django.db.models import Exists, OuterRef, Sum, Value
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -197,10 +195,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe = Recipe.objects.get(pk=pk)
         except Recipe.DoesNotExist:
             raise NotFound('Рецепт не найден!')
-        recipe_hash = hashlib.md5(str(recipe.pk).encode()).hexdigest()[:3]
-        short_link = request.build_absolute_uri(f'/s/{recipe_hash}/')
-        recipe.short_link = recipe_hash
-        recipe.save()
+        short_link = request.build_absolute_uri(f'/s/{recipe.short_link}/')
         return Response({'short-link': short_link})
 
     @action(

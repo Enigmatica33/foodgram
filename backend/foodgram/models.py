@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
@@ -145,8 +147,9 @@ class Recipe(models.Model):
             self.short_link = self.get_link()
         super().save(*args, **kwargs)
 
-    def get_absolute_url(self):
-        return f'/recipes/{self.pk}/'
+    def generate_short_link(self):
+        recipe_hash = uuid.uuid4().hex[:3]
+        return recipe_hash
 
 
 class RecipeIngredient(models.Model):
