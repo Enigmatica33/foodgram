@@ -151,6 +151,9 @@ class Recipe(models.Model):
         recipe_hash = uuid.uuid4().hex[:3]
         return recipe_hash
 
+    def get_absolute_url(self):
+        return f'/recipes/{self.pk}/'
+
 
 class RecipeIngredient(models.Model):
     """Связь Рецептов и Ингредиентов"""
