@@ -67,36 +67,29 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 CSRF_TRUSTED_ORIGINS = ['https://foodgram.myftp.org']
 
-# DATABASE_CHOICE = os.getenv('DATABASE_CHOICE', 'sqlite').lower()
+DATABASE_CHOICE = os.getenv('DATABASE_CHOICE', 'sqlite').lower()
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DATABASE_CHOICE == 'postgres':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+            'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', ''),
+            'PORT': os.getenv('DB_PORT', 5432)
+        }
     }
-}
-
-# if DATABASE_CHOICE == 'postgres':
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.postgresql',
-#             'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
-#             'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
-#             'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-#             'HOST': os.getenv('DB_HOST', ''),
-#             'PORT': os.getenv('DB_PORT', 5432)
-#         }
-#     }
-# elif DATABASE_CHOICE == 'sqlite':
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-# else:
-#     raise ValueError(f"Неизвестное значение для DATABASE_CHOICE: {DATABASE_CHOICE}. "
-#                      "Допустимые значения: 'postgres', 'sqlite'.")
+elif DATABASE_CHOICE == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    raise ValueError(f"Неизвестное значение для DATABASE_CHOICE: {DATABASE_CHOICE}. "
+                     "Допустимые значения: 'postgres', 'sqlite'.")
 
 AUTH_USER_MODEL = 'foodgram.User'
 
