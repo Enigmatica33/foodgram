@@ -144,7 +144,7 @@ class Recipe(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.short_link:
-            self.short_link = self.get_link()
+            self.short_link = self.generate_short_link()
         super().save(*args, **kwargs)
 
     def generate_short_link(self):
