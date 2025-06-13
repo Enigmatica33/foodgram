@@ -1,5 +1,6 @@
 import uuid
 
+from api.queryset import RecipeQuerySet
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
@@ -130,6 +131,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         verbose_name='Дата добавления рецепта'
     )
+    objects = RecipeQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'рецепт'

@@ -153,28 +153,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Recipe.objects.select_related('author').prefetch_related(
-            'tags',
-            'recipeingredient__ingredient'
-        )
-        if user.is_authenticated:
-            queryset = queryset.annotate(is_favorited=Exists(
-                Favorite.objects.filter(
-                    user=user,
-                    recipe=OuterRef('pk')
-                )),
-                is_in_shopping_cart=Exists(
-                    ShoppingCart.objects.filter(
-                        user=user,
-                        recipe=OuterRef('pk')
-                    )
-            ))
-        else:
-            queryset = queryset.annotate(
-                is_favorited=Value(False),
-                is_in_shopping_cart=Value(False)
-            )
-        return queryset
+        return Recipe.objects.with_user_annotations(user)
 
     def get_serializer_class(self):
         """Определяем тип Сериализатора."""
