@@ -1,6 +1,5 @@
 import uuid
 
-from api.queryset import RecipeQuerySet
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
@@ -9,6 +8,7 @@ from django.db import models
 from .constants import (MAX_AMOUNT, MAX_EMAIL, MAX_INGREDIENTS,
                         MAX_MEASUREMENT_UNIT, MAX_RECIPE_NAME, MAX_TAG_NAME,
                         MAX_TAG_SLUG, MAX_TIME, MAX_USER, MIN_AMOUNT, MIN_TIME)
+from .queryset import RecipeQuerySet
 
 
 class User(AbstractUser):

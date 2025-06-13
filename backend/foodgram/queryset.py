@@ -1,27 +1,27 @@
 from django.db import models
 from django.db.models import Exists, OuterRef, Value
 
-from foodgram.models import Favorite, Recipe, ShoppingCart
 
-
-class RecipeQuerySet(models.Queryset):
-    def with_user_annotations(self, user):
+class RecipeQuerySet(models.QuerySet):
+    def with_user_annotations(self, user, FavoriteModel,
+                              ShoppingCartModel, RecipeModel):
         """
         Аннотирует queryset рецептов флагами is_favorite
         и is_in_shopping_cart для указанного пользователя.
         """
-        queryset = Recipe.objects.select_related('author').prefetch_related(
+        queryset = RecipeModel.objects.select_related(
+            'author').prefetch_related(
             'tags',
             'recipeingredient__ingredient'
         )
         if user.is_authenticated:
             queryset = queryset.annotate(is_favorited=Exists(
-                Favorite.objects.filter(
+                FavoriteModel.objects.filter(
                     user=user,
                     recipe=OuterRef('pk')
                 )),
                 is_in_shopping_cart=Exists(
-                    ShoppingCart.objects.filter(
+                    ShoppingCartModel.objects.filter(
                         user=user,
                         recipe=OuterRef('pk')
                     )

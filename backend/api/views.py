@@ -1,4 +1,4 @@
-from django.db.models import Exists, OuterRef, Sum, Value
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import permissions, status, viewsets
@@ -153,7 +153,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Recipe.objects.with_user_annotations(user)
+        return Recipe.objects.with_user_annotations(
+            user, Favorite, ShoppingCart, Recipe)
 
     def get_serializer_class(self):
         """Определяем тип Сериализатора."""
