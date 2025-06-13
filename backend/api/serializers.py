@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         """Определяем значение поля is_subscribed для отображения."""
         request = self.context.get('request')
-        return (request and request.user.is_authenticated 
+        return (request and request.user.is_authenticated
                 and Follow.objects.filter(
                     user=request.user,
                     following=obj).exists())
