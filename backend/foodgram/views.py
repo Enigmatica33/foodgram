@@ -1,4 +1,4 @@
-from django.http import HttpResponseNotFound
+from django.http import Http404
 from django.shortcuts import redirect, render
 
 from .models import Recipe
@@ -10,8 +10,8 @@ def redirect_from_short_link(request, recipe_hash):
         recipe = Recipe.objects.get(short_link=recipe_hash)
         return redirect(recipe)
     except Recipe.DoesNotExist:
-        return HttpResponseNotFound("Рецепт не найден")
+        return Http404("Рецепт не найден")
 
 
 def custom_page_not_found_view(request, exception):
-    return render(request, 'index.html', status=404)
+    return render(request, 'recipes', status=404)
