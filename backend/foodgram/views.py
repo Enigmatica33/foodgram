@@ -10,7 +10,3 @@ def redirect_from_short_link(request, recipe_hash):
         return redirect(recipe)
     except Recipe.DoesNotExist:
         return redirect('/404')
-
-
-# def custom_page_not_found_view(request, exception):
-#     return render(request, 'recipes', status=404)
